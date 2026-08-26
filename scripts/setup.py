@@ -26,6 +26,7 @@ from __future__ import annotations
 import argparse
 import os
 import shutil
+import signal
 import subprocess
 import sys
 import time
@@ -397,7 +398,42 @@ def _spawn(cmd: list[str], *, cwd: Path, env: dict | None = None) -> subprocess.
     if env:
         merged.update(env)
     _c(f"  $ {' '.join(cmd)}   (cwd={cwd})")
-    return subprocess.Popen(cmd, cwd=str(cwd), env=merged)
+    # Run each server in its own process group so shutdown can reach
+    # grandchildren too (e.g. `pnpm dev` spawns `vite` as a child process;
+    # terminating just the pnpm PID can leave vite running and squatting the
+    # port for the next run). Not available on Windows — falls back to the
+    # default (best-effort) there.
+    kwargs = {}
+    if os.name != "nt":
+        kwargs["start_new_session"] = True
+    else:
+        kwargs["creationflags"] = subprocess.CREATE_NEW_PROCESS_GROUP
+    return subprocess.Popen(cmd, cwd=str(cwd), env=merged, **kwargs)
+
+
+def _stop_proc(p: subprocess.Popen, *, timeout: float = 5.0) -> None:
+    """Terminate a process and its whole process group, escalating to kill."""
+    if p.poll() is not None:
+        return
+    try:
+        if os.name != "nt":
+            os.killpg(os.getpgid(p.pid), signal.SIGTERM)
+        else:
+            p.send_signal(signal.CTRL_BREAK_EVENT)
+    except (ProcessLookupError, OSError):
+        pass
+    deadline = time.time() + timeout
+    while p.poll() is None and time.time() < deadline:
+        time.sleep(0.1)
+    if p.poll() is None:
+        try:
+            if os.name != "nt":
+                os.killpg(os.getpgid(p.pid), signal.SIGKILL)
+            else:
+                p.kill()
+        except (ProcessLookupError, OSError):
+            pass
+        p.wait(timeout=5)
 
 
 def cmd_backend(_: argparse.Namespace) -> None:
@@ -460,16 +496,12 @@ def cmd_dev(_: argparse.Namespace) -> None:
     except KeyboardInterrupt:
         _c("\nStopping…")
     finally:
+        # Stop both servers (and their child processes, e.g. vite under
+        # pnpm) whether we got here via Ctrl+C or because one of them died —
+        # a still-running sibling must never be left orphaned holding its
+        # port for the next run.
         for p in procs:
-            if p.poll() is None:
-                p.terminate()
-        # give them a moment, then kill
-        deadline = time.time() + 5
-        for p in procs:
-            while p.poll() is None and time.time() < deadline:
-                time.sleep(0.1)
-            if p.poll() is None:
-                p.kill()
+            _stop_proc(p)
         _c("Stopped.\n")
 
 
