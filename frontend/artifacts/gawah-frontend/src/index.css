@@ -853,11 +853,11 @@ button.call-start-audio[data-lk-enabled='true'],
   text-transform: uppercase;
   font-weight: 600;
   transition:
-    width var(--e-hover) var(--e-ease),
-    top var(--e-hover) var(--e-ease),
-    border-color var(--e-hover) var(--e-ease),
-    box-shadow var(--e-hover) var(--e-ease),
-    background var(--e-hover) var(--e-ease);
+    width 620ms var(--e-ease),
+    top 620ms var(--e-ease),
+    border-color 620ms var(--e-ease),
+    box-shadow 620ms var(--e-ease),
+    background 620ms var(--e-ease);
 }
 .topbar-nav-spacer {
   height: 56px;
@@ -955,6 +955,23 @@ button.call-start-audio[data-lk-enabled='true'],
 }
 .topbar-link.active { color: var(--e-fg); }
 .topbar-link.active::after { transform: scaleX(1); }
+/* Demo link — same hover treatment as the ghost cta-btn (hero "Open Dashboard"): lift + hard offset shadow */
+.topbar-link--cta {
+  transition:
+    color var(--e-hover) var(--e-ease),
+    background var(--e-hover) var(--e-ease),
+    transform var(--e-hover) var(--e-ease),
+    box-shadow var(--e-hover) var(--e-ease);
+}
+.topbar-link--cta:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 var(--e-fg);
+}
+.topbar-link--cta:active {
+  transform: translate(0, 0);
+  box-shadow: 1px 1px 0 var(--e-fg);
+  transition-duration: var(--e-press);
+}
 .topbar-meta {
   display: flex;
   align-items: center;

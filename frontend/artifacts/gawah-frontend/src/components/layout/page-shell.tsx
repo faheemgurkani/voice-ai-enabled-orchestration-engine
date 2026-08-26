@@ -12,7 +12,6 @@ const NAV = [
 export function PageShell({ children }: { children: ReactNode }) {
   const [location] = useLocation();
   const [healthError, setHealthError] = useState<string | null>(null);
-  const [online, setOnline] = useState(false);
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const [pinned, setPinned] = useState(false);
 
@@ -28,12 +27,10 @@ export function PageShell({ children }: { children: ReactNode }) {
     fetchHealth()
       .then(() => {
         if (!alive) return;
-        setOnline(true);
         setHealthError(null);
       })
       .catch(() => {
         if (!alive) return;
-        setOnline(false);
         setHealthError(
           `Backend offline — connect FastAPI at ${import.meta.env.VITE_API_URL || (import.meta.env.PROD ? 'https://gawah-backend.vercel.app' : 'http://localhost:8000')} to use live data`,
         );
@@ -55,15 +52,17 @@ export function PageShell({ children }: { children: ReactNode }) {
             <Link
               key={item.href}
               href={item.href}
-              className={`topbar-link ${location.startsWith(item.match) ? 'active' : ''}`}
+              className={`topbar-link ${item.href === '/demo' ? 'topbar-link--cta' : ''} ${location.startsWith(item.match) ? 'active' : ''}`}
             >
               {item.label}
             </Link>
           ))}
         </div>
         <div className="topbar-meta">
-          {online && <span className="pulse-dot" aria-hidden />}
-          <span>// DASHBOARD</span>
+          <Link href="/demo" className="cta-btn">
+            <span className="cta-sq">●</span>
+            <span className="cta-lbl">Start Demo</span>
+          </Link>
         </div>
       </nav>
       <div className="topbar-nav-spacer" aria-hidden />
