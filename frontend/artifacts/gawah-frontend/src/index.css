@@ -159,13 +159,6 @@
 
 /* ── Eregion Component Classes ─────────────────────────────────────────── */
 
-/* Dot pattern background */
-.dot-bg {
-  background-color: var(--e-bg);
-  background-image: radial-gradient(circle, #c4c2b8 1px, transparent 1px);
-  background-size: 24px 24px;
-}
-
 /* Bento card */
 .bento {
   position: relative;
@@ -1871,13 +1864,55 @@ audio {
 .hero-screenshot-frame {
   overflow: hidden;
   line-height: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Derive height from the frame's own (responsive) width instead of a
+     guessed fixed height — the old clamp() mismatched several screenshots'
+     actual aspect ratios and cropped/shrank them. 1.85:1 matches the app's
+     own screenshots (dashboard/calls/clusters all sit ~1.8-2.0:1). */
+  width: 100%;
+  aspect-ratio: 1.85 / 1;
 }
 .hero-screenshot-frame img {
   display: block;
   width: 100%;
-  height: clamp(280px, 27vw, 360px);
-  object-fit: cover;
-  object-position: top;
+  height: 100%;
+  /* contain, not cover — screenshots must show in full, never cropped */
+  object-fit: contain;
+}
+
+/* Meta slide — larger PRODUCT META card on top, two smaller supporting
+   tiles below it (matches the hero's original before/after-slider layout). */
+.hero-meta-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.hero-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.hero-meta-tile {
+  border: 2px solid var(--e-fg);
+  padding: 22px 20px;
+  min-height: 104px;
+  background: var(--e-bg);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+}
+.hero-meta-tile .pw-redact-label {
+  font-size: 11px;
+}
+.hero-meta-tile-v {
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.3;
 }
 .hero-slider-dots {
   display: flex;
@@ -1970,13 +2005,97 @@ audio {
 }
 
 /* ── Problem section bento grid ─────────────────────────────────────── */
-.problem-grid {
+/* One-view bento — 3 small cells, then one big tile (spans 2 cols) + one
+   small tile sharing the second row. Matches the reference: bars/plots
+   live only in the big tile; everything else is compact stats/text. */
+.problem-bento {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+  gap: 14px;
 }
-.problem-grid .bento { display: flex; flex-direction: column; }
-.problem-grid .bento-body { display: flex; flex-direction: column; gap: 16px; flex: 1; }
+.problem-bento .bento { height: 100%; display: flex; flex-direction: column; }
+.problem-bento .bento-body { display: flex; flex-direction: column; gap: 12px; flex: 1; }
+.problem-tile--big { grid-column: span 2; }
+/* Right column of row 2 — split top/bottom into two stacked tiles,
+   stretched by the grid to match the wide tile's height. */
+.problem-tile--split {
+  grid-column: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.problem-tile--split > div { flex: 1; min-height: 0; }
+.problem-tile--center .bento-body {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+/* Lead number inside stat tiles */
+.pw-lead-num {
+  font-family: 'VT323', monospace;
+  font-size: clamp(36px, 4.5vw, 50px);
+  line-height: 0.9;
+  color: var(--e-accent);
+}
+.pw-source {
+  margin-top: auto;
+  padding-top: 4px;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--e-muted);
+}
+
+/* Compact GBV mini bars — lives only inside the one big visual card */
+.pw-gbv { display: flex; flex-direction: column; gap: 8px; }
+.pw-gbv-row {
+  display: grid;
+  grid-template-columns: 100px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+.pw-gbv-label {
+  font-size: 11px;
+  color: var(--e-fg-soft);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pw-gbv-track {
+  height: 6px;
+  background: var(--e-bg-2);
+  border: 1px solid var(--e-fg);
+  overflow: hidden;
+}
+.pw-gbv-fill {
+  height: 100%;
+  background: var(--e-accent);
+  width: 0%;
+  transition: width 900ms var(--e-ease);
+}
+.pw-gbv-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: right;
+  min-width: 46px;
+}
+
+/* Compact annotation list under a top-card stat/bar */
+.pw-notes {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.pw-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--e-fg-soft);
+}
+.pw-note .dot { margin-top: 5px; flex-shrink: 0; }
 
 /* Redaction widget — caller ID masking to reference code (Problem.A) */
 .pw-redact {
@@ -2139,7 +2258,9 @@ audio {
   line-height: 1.5;
 }
 @media (max-width: 980px) {
-  .problem-grid { grid-template-columns: 1fr; }
+  .problem-bento { grid-template-columns: 1fr; }
+  .problem-tile--big { grid-column: span 1; }
+  .problem-tile--split { grid-column: 1; }
   .pw-timeline {
     grid-template-columns: 1fr;
     gap: 22px;

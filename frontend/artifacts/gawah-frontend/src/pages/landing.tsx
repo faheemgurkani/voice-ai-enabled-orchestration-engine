@@ -4,14 +4,13 @@ import { PageShell } from '@/components/layout/page-shell';
 import { Reveal } from '@/components/landing/reveal';
 import { ScrambleText } from '@/components/landing/scramble-text';
 import { HeroSlider } from '@/components/landing/hero-slider';
-import { HeroDashboardPreview } from '@/components/landing/hero-dashboard-preview';
 import { HeroScreenshotSlide } from '@/components/landing/hero-screenshot-slide';
-import { RedactionWidget, RecordWidget, ConvictionBar } from '@/components/landing/problem-visuals';
+import { GbvMiniBars } from '@/components/landing/problem-visuals';
 
 export default function LandingPage() {
   return (
     <PageShell>
-      <div className="land dot-bg">
+      <div className="land">
         {/* ── Hero ── */}
         <section className="land-hero">
           <div className="land-hero-inner">
@@ -77,30 +76,41 @@ export default function LandingPage() {
                     id: 'meta',
                     label: 'Product meta',
                     content: (
-                      <div className="bento">
-                        <div className="bento-h">
-                          <span className="dot dot-o" />
-                          PRODUCT META
+                      <div className="hero-meta-stack">
+                        <div className="bento">
+                          <div className="bento-h">
+                            <span className="dot dot-o" />
+                            PRODUCT META
+                          </div>
+                          <div className="bento-body kv-grid">
+                            <div className="kv-k">CHANNEL</div>
+                            <div className="kv-v">PSTN PHONE · WEB · NO APP</div>
+                            <div className="kv-k">DOMAIN</div>
+                            <div className="kv-v">CRIMINAL JUSTICE</div>
+                            <div className="kv-k">LANGUAGES</div>
+                            <div className="kv-v">URDU · PUNJABI</div>
+                            <div className="kv-k">COMPLIANCE</div>
+                            <div className="kv-v">CRPC §161 / PDPA 2023</div>
+                            <div className="kv-k">PROTECTION</div>
+                            <div className="kv-v">PUNJAB WPA 2018</div>
+                            <div className="kv-k">STATUS</div>
+                            <div className="kv-v text-e-accent" style={{ fontWeight: 'bold' }}>
+                              LIVE PROTOTYPE
+                            </div>
+                          </div>
                         </div>
-                        <div className="bento-body kv-grid">
-                          <div className="kv-k">CHANNEL</div>
-                          <div className="kv-v">PSTN PHONE · NO APP</div>
-                          <div className="kv-k">DOMAIN</div>
-                          <div className="kv-v">CRIMINAL JUSTICE</div>
-                          <div className="kv-k">COMPLIANCE</div>
-                          <div className="kv-v">CRPC §161 / PDPA 2023</div>
-                          <div className="kv-k">STATUS</div>
-                          <div className="kv-v text-e-accent" style={{ fontWeight: 'bold' }}>
-                            LIVE PROTOTYPE
+                        <div className="hero-meta-grid">
+                          <div className="hero-meta-tile">
+                            <div className="pw-redact-label">Built for</div>
+                            <div className="hero-meta-tile-v">UPLIFT AI HACKATHON 2026</div>
+                          </div>
+                          <div className="hero-meta-tile">
+                            <div className="pw-redact-label">Deployment</div>
+                            <div className="hero-meta-tile-v">WEB + PSTN</div>
                           </div>
                         </div>
                       </div>
                     ),
-                  },
-                  {
-                    id: 'preview',
-                    label: 'Dashboard preview',
-                    content: <HeroDashboardPreview />,
                   },
                   {
                     id: 'shot-dashboard',
@@ -202,95 +212,104 @@ export default function LandingPage() {
             </header>
           </Reveal>
 
-          <div className="problem-grid">
+          {/* One-view bento — row 1: three anchor stats. Row 2: one wide
+              tile (the intimidation problem + GBV chart) beside a column
+              split top/bottom into two more stats. */}
+          <div className="problem-bento">
             <Reveal delay={0.05}>
-              <div className="bento" style={{ height: '100%' }}>
+              <div className="bento">
                 <div className="bento-h">
                   <span className="dot dot-o" />
-                  PROBLEM.A · SILENCE
+                  CASE.BACKLOG
                 </div>
                 <div className="bento-body">
-                  <p style={{ margin: 0, lineHeight: 1.65 }}>
-                    Most witnesses never report — fear, not ignorance. Answer: anonymity by
-                    design.
+                  <div className="pw-lead-num">2.3M+</div>
+                  <p style={{ margin: 0, fontSize: 12, lineHeight: 1.5, color: 'var(--e-fg-soft)' }}>
+                    Cases pending in Pakistan's courts.
                   </p>
-                  <RedactionWidget />
+                  <div className="pw-source">World Justice Project, 2023</div>
                 </div>
               </div>
             </Reveal>
-            <Reveal delay={0.1}>
-              <div className="bento" style={{ height: '100%' }}>
+            <Reveal delay={0.08}>
+              <div className="bento">
                 <div className="bento-h">
                   <span className="dot dot-k" />
-                  PROBLEM.B · LOST REPORTS
+                  RULE.OF.LAW
                 </div>
                 <div className="bento-body">
-                  <p style={{ margin: 0, lineHeight: 1.65 }}>
-                    Filed reports vanish into paper and drawers. Answer: an immutable timestamped
-                    record.
+                  <div className="pw-lead-num">129/142</div>
+                  <p style={{ margin: 0, fontSize: 12, lineHeight: 1.5, color: 'var(--e-fg-soft)' }}>
+                    Pakistan's Rule of Law Index rank.
                   </p>
-                  <RecordWidget />
+                  <div className="pw-source">WJP Rule of Law Index</div>
                 </div>
               </div>
             </Reveal>
-            <Reveal delay={0.15}>
-              <div className="bento" style={{ height: '100%' }}>
+            <Reveal delay={0.11}>
+              <div className="bento">
                 <div className="bento-h">
                   <span className="dot dot-r" />
                   CONVICTION.RATE
                 </div>
                 <div className="bento-body">
-                  <p style={{ margin: 0, lineHeight: 1.65 }}>
-                    Pakistan's low conviction rate is the stakes — a record that survives is a
-                    record that can be used.
+                  <div className="pw-dual-num">
+                    <div>
+                      <div className="pw-lead-num">&lt;3%</div>
+                      <div className="pw-redact-label">HRCP · rape cases</div>
+                    </div>
+                    <div>
+                      <div className="pw-lead-num">8%</div>
+                      <div className="pw-redact-label">PBS · national</div>
+                    </div>
+                  </div>
+                  <p style={{ margin: 0, fontSize: 12, lineHeight: 1.5, color: 'var(--e-fg-soft)' }}>
+                    Rape-case conviction rate, despite 4,500+ registered in 2023 — lowest in
+                    South Asia.
                   </p>
-                  <ConvictionBar value={8.66} />
+                  <div className="pw-source">HRCP · Pakistan Bureau of Statistics</div>
+                </div>
+              </div>
+            </Reveal>
+
+            <Reveal delay={0.15}>
+              <div className="bento problem-tile--big">
+                <div className="bento-h">
+                  <span className="dot dot-o" />
+                  THE WITNESS INTIMIDATION PROBLEM
+                </div>
+                <div className="bento-body pw-split-body">
+                  <div>
+                    <p style={{ margin: 0, fontSize: 13, lineHeight: 1.55, color: 'var(--e-fg-soft)' }}>
+                      60% of rapists are acquitted due to insufficient evidence or witness
+                      intimidation.
+                    </p>
+                    <p style={{ margin: '12px 0 0', fontSize: 11, color: 'var(--e-muted)' }}>
+                      32,617 total GBV cases reported in Pakistan, 2024
+                    </p>
+                    <div className="pw-source">Human Rights Watch · SSDO, 2024</div>
+                  </div>
+                  <GbvMiniBars />
+                </div>
+              </div>
+            </Reveal>
+
+            <Reveal delay={0.18}>
+              <div className="bento problem-tile--tall">
+                <div className="bento-h">
+                  <span className="dot dot-r" />
+                  SUPPORT.COVERAGE
+                </div>
+                <div className="bento-body problem-tile--center-body">
+                  <div className="pw-lead-num">12%</div>
+                  <p style={{ margin: 0, fontSize: 12, lineHeight: 1.5, fontWeight: 700 }}>
+                    Population coverage — only 32 rape crisis centers nationwide.
+                  </p>
+                  <div className="pw-source">UNFPA</div>
                 </div>
               </div>
             </Reveal>
           </div>
-
-          <Reveal delay={0.2}>
-            <div className="bento" style={{ marginTop: 16 }}>
-              <div className="bento-h">
-                <span className="dot dot-o" />
-                MISSION · PIPELINE
-                <span className="bento-name">TRUTH</span>
-              </div>
-              <div className="bento-body">
-                <div className="pw-timeline">
-                  {[
-                    {
-                      n: '1',
-                      label: 'Call received',
-                      copy: 'Witness reaches Gawah by phone or web — no app, no literacy required.',
-                    },
-                    {
-                      n: '2',
-                      label: 'STT + structure',
-                      copy: 'Voice becomes a structured §161 record, in Urdu or Punjabi.',
-                    },
-                    {
-                      n: '3',
-                      label: 'Consistency check',
-                      copy: 'Live flags catch contradictions before the statement is confirmed.',
-                    },
-                    {
-                      n: '4',
-                      label: 'Ref code issued',
-                      copy: 'A 6-character code — the durable, anonymous link to the record.',
-                    },
-                  ].map((step, i) => (
-                    <div key={step.n} className={`pw-timeline-step${i === 3 ? ' is-active' : ''}`}>
-                      <span className="pw-timeline-dot">{step.n}</span>
-                      <div className="pw-timeline-label">{step.label}</div>
-                      <p className="pw-timeline-copy">{step.copy}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </Reveal>
         </section>
 
         {/* ── Anonymous ── */}

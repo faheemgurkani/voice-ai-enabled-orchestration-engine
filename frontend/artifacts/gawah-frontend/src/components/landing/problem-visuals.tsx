@@ -48,8 +48,18 @@ export function RecordWidget() {
   );
 }
 
-/** Conviction-rate split bar, same visual language as the app's own corroboration ScoreBar. */
-export function ConvictionBar({ value = 8.66 }: { value?: number }) {
+/** A split bar contrasting one figure against its complement — reused for any stat pair. */
+export function SplitStat({
+  value,
+  labelA,
+  labelB,
+  suffix = '%',
+}: {
+  value: number;
+  labelA: string;
+  labelB: string;
+  suffix?: string;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: '-10% 0px -10% 0px' });
   const reduce = useReducedMotion();
@@ -69,14 +79,59 @@ export function ConvictionBar({ value = 8.66 }: { value?: number }) {
       </div>
       <div className="pw-split-legend">
         <div>
-          <div className="val text-e-accent">{value.toFixed(2)}%</div>
-          <div className="pw-redact-label">Convicted</div>
+          <div className="val text-e-accent">
+            {value}
+            {suffix}
+          </div>
+          <div className="pw-redact-label">{labelA}</div>
         </div>
         <div style={{ textAlign: 'right' }}>
-          <div className="val text-e-muted">{(100 - value).toFixed(2)}%</div>
-          <div className="pw-redact-label">Unresolved</div>
+          <div className="val text-e-muted">
+            {100 - value}
+            {suffix}
+          </div>
+          <div className="pw-redact-label">{labelB}</div>
         </div>
       </div>
+    </div>
+  );
+}
+
+/** Compact normalized mini bars — GBV case-type breakdown, for use inside the one big visual card. */
+export function GbvMiniBars() {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: '-10% 0px -10% 0px' });
+  const reduce = useReducedMotion();
+  const [on, setOn] = useState(false);
+
+  useEffect(() => {
+    if (!inView && !reduce) return;
+    const id = requestAnimationFrame(() => setOn(true));
+    return () => cancelAnimationFrame(id);
+  }, [inView, reduce]);
+
+  const rows = [
+    { label: 'Kidnapping', value: 24439 },
+    { label: 'Rape', value: 5339 },
+    { label: 'Domestic violence', value: 2238 },
+    { label: 'Honour killings', value: 547 },
+  ];
+  const max = rows[0].value;
+
+  return (
+    <div ref={ref} className="pw-gbv">
+      {rows.map((r) => (
+        <div key={r.label} className="pw-gbv-row">
+          <div className="pw-gbv-label">{r.label}</div>
+          <div className="pw-gbv-track">
+            <div
+              className="pw-gbv-fill"
+              style={{ width: on ? `${(r.value / max) * 100}%` : '0%' }}
+            />
+          </div>
+          <div className="pw-gbv-value">{r.value.toLocaleString()}</div>
+        </div>
+      ))}
     </div>
   );
 }

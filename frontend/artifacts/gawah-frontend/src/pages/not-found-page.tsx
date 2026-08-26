@@ -5,7 +5,6 @@ export default function NotFoundPage() {
   return (
     <PageShell>
       <div
-        className="dot-bg"
         style={{
           flex: 1,
           display: 'flex',
