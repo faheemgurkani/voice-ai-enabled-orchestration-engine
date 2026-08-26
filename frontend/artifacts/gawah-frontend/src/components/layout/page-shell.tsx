@@ -14,6 +14,14 @@ export function PageShell({ children }: { children: ReactNode }) {
   const [healthError, setHealthError] = useState<string | null>(null);
   const [online, setOnline] = useState(false);
   const [bannerDismissed, setBannerDismissed] = useState(false);
+  const [pinned, setPinned] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setPinned(window.scrollY > 24);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   useEffect(() => {
     let alive = true;
@@ -37,7 +45,7 @@ export function PageShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="page-wrap">
-      <nav className="topbar-nav">
+      <nav className={`topbar-nav${pinned ? ' is-pinned' : ''}`}>
         <Link href="/" className="topbar-brand">
           <span className="accent-sq" />
           GAWAH گواہ
@@ -58,6 +66,7 @@ export function PageShell({ children }: { children: ReactNode }) {
           <span>// DASHBOARD</span>
         </div>
       </nav>
+      <div className="topbar-nav-spacer" aria-hidden />
       {healthError && !bannerDismissed && (
         <div className="health-banner" role="status">
           <span>{healthError}</span>

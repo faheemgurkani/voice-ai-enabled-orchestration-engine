@@ -827,15 +827,21 @@ button.call-start-audio[data-lk-enabled='true'],
   cursor: pointer;
 }
 
-/* Top nav bar */
+/* Top nav bar — fixed, so it always stays pinned at the top of the
+   viewport regardless of scroll position (including at the bottom of a
+   long page). Reserves its own height via .topbar-nav-spacer below. */
 .topbar-nav {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 40;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0;
+  width: 100%;
+  margin: 0 auto;
   border-bottom: 3px solid var(--e-fg);
   padding: 0 32px;
   height: 56px;
@@ -846,6 +852,32 @@ button.call-start-audio[data-lk-enabled='true'],
   letter-spacing: 0.18em;
   text-transform: uppercase;
   font-weight: 600;
+  transition:
+    width var(--e-hover) var(--e-ease),
+    top var(--e-hover) var(--e-ease),
+    border-color var(--e-hover) var(--e-ease),
+    box-shadow var(--e-hover) var(--e-ease),
+    background var(--e-hover) var(--e-ease);
+}
+.topbar-nav-spacer {
+  height: 56px;
+  flex-shrink: 0;
+}
+/* Pinned state — once scrolled, the bar narrows and floats off the edges,
+   staying fixed at the top for the rest of the page (width-only change;
+   height is untouched). */
+.topbar-nav.is-pinned {
+  top: 16px;
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+  width: min(100% - 48px, 1100px);
+  border: 3px solid var(--e-fg);
+  background: color-mix(in srgb, var(--e-bg) 98%, transparent);
+  box-shadow: 4px 4px 0 0 var(--e-fg);
+}
+@media (prefers-reduced-motion: reduce) {
+  .topbar-nav { transition: none; }
 }
 .topbar-brand {
   display: flex;
