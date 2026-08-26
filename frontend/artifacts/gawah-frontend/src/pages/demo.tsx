@@ -696,12 +696,20 @@ function LivePanels({
         <span className="find-title">Pipeline feed</span>
       </div>
       <div className="find-body activity-log-body">
-        {(activity || []).slice(0, 8).map((item, idx) => (
-          <div key={idx} className="activity-log-line">
-            [{item.channel || '?'}] {item.type || 'event'} · {item.status || '—'}
-            {item.detail ? ` — ${String(item.detail).slice(0, 80)}` : ''}
-          </div>
-        ))}
+        <AnimatePresence initial={false}>
+          {(activity || []).slice(0, 8).map((item, idx) => (
+            <motion.div
+              key={idx}
+              className="activity-log-line"
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            >
+              [{item.channel || '?'}] {item.type || 'event'} · {item.status || '—'}
+              {item.detail ? ` — ${String(item.detail).slice(0, 80)}` : ''}
+            </motion.div>
+          ))}
+        </AnimatePresence>
         {!activity?.length &&
           (callsList || []).slice(0, 6).map((item, idx) => (
             <div key={idx} className="activity-log-line">
