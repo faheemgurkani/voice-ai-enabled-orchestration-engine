@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { STATUS_META, LANGUAGE_META, SECTION_162_DISCLAIMER } from '@/lib/types';
 import type { StatementStatus, LanguageCode } from '@/lib/types';
 
@@ -70,11 +71,18 @@ export function ScoreBar({
   else if (score >= 0.4) color = 'amber';
 
   const percentage = Math.round(score * 100);
+  const [width, setWidth] = useState(0);
+
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setWidth(percentage));
+    return () => cancelAnimationFrame(id);
+  }, [percentage]);
+
   return (
     <div className="score-bar-wrap">
       {label && <span>{label}</span>}
       <div className="score-bar-track">
-        <div className={`score-bar-fill ${color}`} style={{ width: `${percentage}%` }} />
+        <div className={`score-bar-fill ${color}`} style={{ width: `${width}%` }} />
       </div>
       <span style={{ minWidth: '40px', textAlign: 'right' }}>{percentage}%</span>
     </div>
