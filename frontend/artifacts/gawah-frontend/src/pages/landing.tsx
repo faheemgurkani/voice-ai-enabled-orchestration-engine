@@ -3,7 +3,10 @@ import { motion } from 'framer-motion';
 import { PageShell } from '@/components/layout/page-shell';
 import { Reveal } from '@/components/landing/reveal';
 import { ScrambleText } from '@/components/landing/scramble-text';
-import { CountUp } from '@/components/count-up';
+import { HeroSlider } from '@/components/landing/hero-slider';
+import { HeroDashboardPreview } from '@/components/landing/hero-dashboard-preview';
+import { HeroScreenshotSlide } from '@/components/landing/hero-screenshot-slide';
+import { RedactionWidget, RecordWidget, ConvictionBar } from '@/components/landing/problem-visuals';
 
 export default function LandingPage() {
   return (
@@ -64,41 +67,110 @@ export default function LandingPage() {
             </div>
 
             <motion.div
-              style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.55, delay: 0.22 }}
             >
-              <div className="bento">
-                <div className="bento-h">
-                  <span className="dot dot-o" />
-                  PRODUCT META
-                </div>
-                <div className="bento-body kv-grid">
-                  <div className="kv-k">CHANNEL</div>
-                  <div className="kv-v">PSTN PHONE · NO APP</div>
-                  <div className="kv-k">DOMAIN</div>
-                  <div className="kv-v">CRIMINAL JUSTICE</div>
-                  <div className="kv-k">COMPLIANCE</div>
-                  <div className="kv-v">CRPC §161 / PDPA 2023</div>
-                  <div className="kv-k">STATUS</div>
-                  <div className="kv-v text-e-accent" style={{ fontWeight: 'bold' }}>
-                    LIVE PROTOTYPE
-                  </div>
-                </div>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-                <div className="hud">
-                  <div className="hud-k">Conviction Rate</div>
-                  <div className="hud-v accent">
-                    <CountUp value={8.66} suffix="%" decimals={2} />
-                  </div>
-                </div>
-                <div className="hud">
-                  <div className="hud-k">Mission</div>
-                  <div className="hud-v">TRUTH</div>
-                </div>
-              </div>
+              <HeroSlider
+                slides={[
+                  {
+                    id: 'meta',
+                    label: 'Product meta',
+                    content: (
+                      <div className="bento">
+                        <div className="bento-h">
+                          <span className="dot dot-o" />
+                          PRODUCT META
+                        </div>
+                        <div className="bento-body kv-grid">
+                          <div className="kv-k">CHANNEL</div>
+                          <div className="kv-v">PSTN PHONE · NO APP</div>
+                          <div className="kv-k">DOMAIN</div>
+                          <div className="kv-v">CRIMINAL JUSTICE</div>
+                          <div className="kv-k">COMPLIANCE</div>
+                          <div className="kv-v">CRPC §161 / PDPA 2023</div>
+                          <div className="kv-k">STATUS</div>
+                          <div className="kv-v text-e-accent" style={{ fontWeight: 'bold' }}>
+                            LIVE PROTOTYPE
+                          </div>
+                        </div>
+                      </div>
+                    ),
+                  },
+                  {
+                    id: 'preview',
+                    label: 'Dashboard preview',
+                    content: <HeroDashboardPreview />,
+                  },
+                  {
+                    id: 'shot-dashboard',
+                    label: 'PREVIEW · DASHBOARD',
+                    content: (
+                      <HeroScreenshotSlide
+                        src="/demo/dashboard.png"
+                        label="PREVIEW · DASHBOARD"
+                        alt="Gawah case dashboard — statement review queue with status, flags, and corroboration scores"
+                      />
+                    ),
+                  },
+                  {
+                    id: 'shot-statement',
+                    label: 'PREVIEW · STATEMENT',
+                    content: (
+                      <HeroScreenshotSlide
+                        src="/demo/statement-detail.png"
+                        label="PREVIEW · STATEMENT"
+                        alt="Statement detail view with inconsistency flags and CrPC §162 boundary notice"
+                      />
+                    ),
+                  },
+                  {
+                    id: 'shot-calls',
+                    label: 'PREVIEW · CALL PIPELINE',
+                    content: (
+                      <HeroScreenshotSlide
+                        src="/demo/calls-pipeline.png"
+                        label="PREVIEW · CALL PIPELINE"
+                        alt="Live call pipeline tracking web and phone testimony sessions"
+                      />
+                    ),
+                  },
+                  {
+                    id: 'shot-clusters',
+                    label: 'PREVIEW · CLUSTERS',
+                    content: (
+                      <HeroScreenshotSlide
+                        src="/demo/clusters.png"
+                        label="PREVIEW · CLUSTERS"
+                        alt="Incident clusters grouping multi-witness statements by corroboration score"
+                      />
+                    ),
+                  },
+                  {
+                    id: 'shot-cluster-detail',
+                    label: 'PREVIEW · CORROBORATION',
+                    content: (
+                      <HeroScreenshotSlide
+                        src="/demo/cluster-detail.png"
+                        label="PREVIEW · CORROBORATION"
+                        alt="Field-level corroboration map across witnesses, with collusion check"
+                      />
+                    ),
+                  },
+                  {
+                    id: 'shot-voice-demo',
+                    label: 'PREVIEW · VOICE DEMO',
+                    content: (
+                      <HeroScreenshotSlide
+                        src="/demo/voice-demo.png"
+                        label="PREVIEW · VOICE DEMO"
+                        alt="Voice demo page for starting a live web or phone call"
+                      />
+                    ),
+                  },
+                ]}
+                interval={5200}
+              />
             </motion.div>
           </div>
         </section>
@@ -130,7 +202,7 @@ export default function LandingPage() {
             </header>
           </Reveal>
 
-          <div className="land-split">
+          <div className="problem-grid">
             <Reveal delay={0.05}>
               <div className="bento" style={{ height: '100%' }}>
                 <div className="bento-h">
@@ -139,13 +211,14 @@ export default function LandingPage() {
                 </div>
                 <div className="bento-body">
                   <p style={{ margin: 0, lineHeight: 1.65 }}>
-                    Most witnesses never report — fear, not ignorance. Answer: anonymity by design.
-                    A reference code and pseudonym; the dashboard never shows the caller ID.
+                    Most witnesses never report — fear, not ignorance. Answer: anonymity by
+                    design.
                   </p>
+                  <RedactionWidget />
                 </div>
               </div>
             </Reveal>
-            <Reveal delay={0.12}>
+            <Reveal delay={0.1}>
               <div className="bento" style={{ height: '100%' }}>
                 <div className="bento-h">
                   <span className="dot dot-k" />
@@ -154,12 +227,70 @@ export default function LandingPage() {
                 <div className="bento-body">
                   <p style={{ margin: 0, lineHeight: 1.65 }}>
                     Filed reports vanish into paper and drawers. Answer: an immutable timestamped
-                    record — proof the statement exists, independent of police custody.
+                    record.
                   </p>
+                  <RecordWidget />
+                </div>
+              </div>
+            </Reveal>
+            <Reveal delay={0.15}>
+              <div className="bento" style={{ height: '100%' }}>
+                <div className="bento-h">
+                  <span className="dot dot-r" />
+                  CONVICTION.RATE
+                </div>
+                <div className="bento-body">
+                  <p style={{ margin: 0, lineHeight: 1.65 }}>
+                    Pakistan's low conviction rate is the stakes — a record that survives is a
+                    record that can be used.
+                  </p>
+                  <ConvictionBar value={8.66} />
                 </div>
               </div>
             </Reveal>
           </div>
+
+          <Reveal delay={0.2}>
+            <div className="bento" style={{ marginTop: 16 }}>
+              <div className="bento-h">
+                <span className="dot dot-o" />
+                MISSION · PIPELINE
+                <span className="bento-name">TRUTH</span>
+              </div>
+              <div className="bento-body">
+                <div className="pw-timeline">
+                  {[
+                    {
+                      n: '1',
+                      label: 'Call received',
+                      copy: 'Witness reaches Gawah by phone or web — no app, no literacy required.',
+                    },
+                    {
+                      n: '2',
+                      label: 'STT + structure',
+                      copy: 'Voice becomes a structured §161 record, in Urdu or Punjabi.',
+                    },
+                    {
+                      n: '3',
+                      label: 'Consistency check',
+                      copy: 'Live flags catch contradictions before the statement is confirmed.',
+                    },
+                    {
+                      n: '4',
+                      label: 'Ref code issued',
+                      copy: 'A 6-character code — the durable, anonymous link to the record.',
+                    },
+                  ].map((step, i) => (
+                    <div key={step.n} className={`pw-timeline-step${i === 3 ? ' is-active' : ''}`}>
+                      <span className="pw-timeline-dot">{step.n}</span>
+                      <div className="pw-timeline-label">{step.label}</div>
+                      <p className="pw-timeline-copy">{step.copy}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </Reveal>
         </section>
 
         {/* ── Anonymous ── */}
