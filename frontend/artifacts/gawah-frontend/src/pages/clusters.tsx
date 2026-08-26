@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchClusters } from '@/lib/api';
 import { PageShell } from '@/components/layout/page-shell';
 import { ScoreBar } from '@/components/badges';
+import { BorderTrail } from '@/components/border-trail';
 
 export default function ClustersPage() {
   const { data: list, isLoading, error } = useQuery({
@@ -51,6 +52,7 @@ export default function ClustersPage() {
                     cluster.collusion_warning ? ' cluster-card--alert' : ''
                   }`}
                 >
+                  {cluster.collusion_warning && <BorderTrail color="var(--e-yellow)" duration={2.4} />}
                   <div className="bento-h">
                     <span className="dot dot-o" />
                     CLUSTER.{String(idx + 1).padStart(3, '0')}
