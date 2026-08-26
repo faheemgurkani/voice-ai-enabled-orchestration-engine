@@ -1,5 +1,6 @@
 import { Component, useEffect, useState, type ReactNode } from 'react';
 import { Link } from 'wouter';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
   completeWebSession,
@@ -467,11 +468,19 @@ export default function DemoPage() {
                     {toolLog.length === 0 && (
                       <div className="activity-log-empty">Waiting for events…</div>
                     )}
-                    {toolLog.map((line, i) => (
-                      <div key={`${i}-${line}`} className="activity-log-line">
-                        {line}
-                      </div>
-                    ))}
+                    <AnimatePresence initial={false}>
+                      {toolLog.map((line, i) => (
+                        <motion.div
+                          key={`${i}-${line}`}
+                          className="activity-log-line"
+                          initial={{ opacity: 0, x: -8 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                        >
+                          {line}
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
                   </div>
                 </div>
 
