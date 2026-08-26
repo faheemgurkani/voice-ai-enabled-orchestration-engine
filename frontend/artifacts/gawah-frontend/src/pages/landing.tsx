@@ -150,8 +150,8 @@ export default function LandingPage() {
                 WHY WITNESSES.<span className="accent">WITHDRAW</span>
               </h2>
               <p className="land-chapter-sub">
-                Two failures — silence, and lost paper. Gawah answers both without asking the
-                witness to walk into a station.
+                Fear of exposure, and paper that gets lost. Gawah fixes both — no station visit
+                required.
               </p>
             </header>
           </Reveal>
@@ -163,14 +163,10 @@ export default function LandingPage() {
                   <span className="dot dot-o" />
                   PROBLEM.A · SILENCE
                 </div>
-                <div className="bento-body page-stack" style={{ gap: 16 }}>
+                <div className="bento-body">
                   <p style={{ margin: 0, lineHeight: 1.65 }}>
-                    Many witnesses never report at all. Fear of exposure is the barrier — not
-                    ignorance of the crime.
-                  </p>
-                  <p className="text-e-muted" style={{ margin: 0, fontSize: 14, lineHeight: 1.6 }}>
-                    Answer: anonymity by design. Reference code + pseudonym. The dashboard shows the
-                    statement — not the caller ID.
+                    Most witnesses never report — fear, not ignorance. Answer: anonymity by design.
+                    A reference code and pseudonym; the dashboard never shows the caller ID.
                   </p>
                 </div>
               </div>
@@ -181,14 +177,10 @@ export default function LandingPage() {
                   <span className="dot dot-k" />
                   PROBLEM.B · LOST REPORTS
                 </div>
-                <div className="bento-body page-stack" style={{ gap: 16 }}>
+                <div className="bento-body">
                   <p style={{ margin: 0, lineHeight: 1.65 }}>
-                    Reports that are filed often disappear — written on paper, in a drawer, in a
-                    station the witness is afraid to return to.
-                  </p>
-                  <p className="text-e-muted" style={{ margin: 0, fontSize: 14, lineHeight: 1.6 }}>
-                    Answer: immutable timestamped record. The reference code is proof the statement
-                    was made — independent of police custody.
+                    Filed reports vanish into paper and drawers. Answer: an immutable timestamped
+                    record — proof the statement exists, independent of police custody.
                   </p>
                 </div>
               </div>
@@ -203,10 +195,7 @@ export default function LandingPage() {
               <h2 className="land-chapter-title">
                 GO ON RECORD.<span className="accent">ANONYMOUSLY</span>
               </h2>
-              <p className="land-chapter-sub">
-                Privacy mode is the mechanism — not a cosmetic flag. Identity decoupled from
-                statement by design.
-              </p>
+              <p className="land-chapter-sub">Identity decoupled from statement, by design.</p>
             </header>
           </Reveal>
 
@@ -228,10 +217,9 @@ export default function LandingPage() {
                   </div>
                   <div className="bento-body">
                     <ul className="e-bullets">
-                      <li>Caller ID masked from dashboard views</li>
+                      <li>Caller ID masked from every dashboard view</li>
                       <li>Pseudonym + 6-character reference code — the durable link</li>
-                      <li>No PII without Phase 0 explicit consent</li>
-                      <li>Witness may request full decoupling; statement remains</li>
+                      <li>No PII without explicit consent</li>
                     </ul>
                   </div>
                 </div>
@@ -241,8 +229,7 @@ export default function LandingPage() {
                     WHAT THE DASHBOARD SHOWS
                   </div>
                   <div className="bento-body" style={{ fontSize: 14, lineHeight: 1.65 }}>
-                    Statement fields, consistency flags, protection referral — not name, not phone
-                    number. Dashboard is built for counsel, not caller identity.
+                    Statement, consistency flags, protection referral — never name or phone number.
                   </div>
                 </div>
               </div>
@@ -258,9 +245,8 @@ export default function LandingPage() {
                 INTELLIGENCE.<span className="accent">LAYER</span>
               </h2>
               <p className="land-chapter-sub">
-                Consistency analysis on every call record — then multi-witness cluster depth when
-                neighbours describe the same incident. For counsel preparation. Never lie detection.
-                Never court corroboration.
+                Consistency flags on every call, cluster depth across witnesses. For counsel prep —
+                never lie detection, never court corroboration.
               </p>
             </header>
           </Reveal>
@@ -274,21 +260,12 @@ export default function LandingPage() {
                 </div>
                 <div className="bento-body page-stack" style={{ gap: 16 }}>
                   <p style={{ margin: 0, lineHeight: 1.65 }}>
-                    Intra-statement analysis on a single witness record. Surfaces internal
-                    contradictions so counsel can resolve them before the contradiction surface
-                    reaches trial under CrPC §162.
+                    Flags contradictions within a single statement, live and on a deeper post-call
+                    pass — before they surface at trial.
                   </p>
                   <ul className="e-bullets">
-                    <li>
-                      Real-time during the call — agent flags clear conflicts as the witness speaks
-                    </li>
-                    <li>
-                      Post-call hybrid pass — deeper claim-pair analysis on the saved narrative
-                    </li>
-                    <li>
-                      Typed flags: temporal · spatial · identity · sequence · sensory · numerical
-                    </li>
-                    <li>Side-by-side A/B quotes + score on the statement dashboard — not intent scoring</li>
+                    <li>Typed flags: temporal · spatial · identity · sequence · numerical</li>
+                    <li>Side-by-side A/B quotes on the statement dashboard</li>
                   </ul>
                 </div>
               </div>
@@ -301,61 +278,22 @@ export default function LandingPage() {
                 </div>
                 <div className="bento-body page-stack" style={{ gap: 16 }}>
                   <p style={{ margin: 0, lineHeight: 1.65 }}>
-                    When multiple voices describe the same incident, Gawah groups them into an
-                    incident cluster and maps field-level agreement — who, what, when, where, how —
-                    so lawyers stop cross-referencing by hand.
+                    Groups witnesses describing the same incident and maps field-level agreement —
+                    who, what, when, where — so lawyers stop cross-referencing by hand.
                   </p>
                   <ul className="e-bullets">
-                    <li>Automatic clustering by time, place, and overlapping narrative</li>
-                    <li>
-                      Field map: agreement · partial · conflict · collusion warning
-                    </li>
-                    <li>
-                      Composite corroboration score as a preparedness instrument — not evidence
-                    </li>
-                    <li>
-                      Near-identical phrasing triggers collusion caution, not a perfect score
-                    </li>
+                    <li>Field map: agreement · partial · conflict · collusion warning</li>
+                    <li>Near-identical phrasing flags collusion, not a perfect score</li>
                   </ul>
                 </div>
               </div>
             </Reveal>
           </div>
 
-          <Reveal delay={0.1}>
-            <div className="land-feature-row" style={{ marginTop: 20 }}>
-              <article className="land-feature">
-                <span className="idx">LIVE</span>
-                <h3>During the call</h3>
-                <p>
-                  Obvious contradictions are flagged in-session so the readback step can tighten the
-                  record before confirmation.
-                </p>
-              </article>
-              <article className="land-feature">
-                <span className="idx">DEPTH</span>
-                <h3>After the call</h3>
-                <p>
-                  Background consistency + corroboration jobs enrich the statement and any linked
-                  cluster for the dashboard.
-                </p>
-              </article>
-              <article className="land-feature">
-                <span className="idx">MAP</span>
-                <h3>Cluster detail</h3>
-                <p>
-                  Field-by-field conflict map shows exactly what counsel must brief or investigate
-                  before court appearance.
-                </p>
-              </article>
-            </div>
-          </Reveal>
-
           <Reveal delay={0.14}>
             <div className="insight" style={{ marginTop: 24 }}>
               <span className="insight-lbl">§162 BOUNDARY</span>
               Pre-litigation intelligence only — not admissible corroboration under CrPC Section 162.
-              Scores prepare lawyers and reviewers; they do not replace in-court testimony.
             </div>
           </Reveal>
 
@@ -381,8 +319,7 @@ export default function LandingPage() {
                 WHY THIS.<span className="accent">IS LEGAL</span>
               </h2>
               <p className="land-chapter-sub">
-                CrPC 1898 (Pakistan kept the numbering — not India’s BNSS). Gawah makes §161 better
-                — it does not invent §164 standing.
+                Gawah makes CrPC §161 better — it does not invent §164 standing.
               </p>
             </header>
           </Reveal>
@@ -392,44 +329,23 @@ export default function LandingPage() {
               <article className="land-feature">
                 <span className="idx">§161</span>
                 <h3>Examination</h3>
-                <p>
-                  Police-level oral exam. Must be as actually made — not a constable’s précis. That
-                  gap is what collapses under cross-examination.
-                </p>
+                <p>Police-level oral exam, recorded as actually made — not a constable's précis.</p>
               </article>
               <article className="land-feature">
                 <span className="idx">§162</span>
                 <h3>Not signed</h3>
-                <p>
-                  §161 statements must not be signed. Voice confirmation + stored audio is the
-                  legally defensible mechanism.
-                </p>
+                <p>§161 statements aren't signed. Voice confirmation + stored audio stand in.</p>
               </article>
               <article className="land-feature">
                 <span className="idx">§164</span>
                 <h3>Boundary</h3>
-                <p>
-                  Magistrate statements carry evidentiary weight. Gawah does not claim that. §161
-                  refreshes memory and surfaces inconsistencies.
-                </p>
+                <p>Magistrate statements carry weight Gawah doesn't claim. §161 refreshes memory.</p>
               </article>
               <article className="land-feature">
                 <span className="idx">PDPA</span>
                 <h3>2023 data law</h3>
-                <p>
-                  Consent before facts. Sensitive category. Purpose-limited. No sale. EU/encrypted
-                  demo store → Pakistan-hosted / ap-south-1 in production.
-                </p>
+                <p>Consent before facts. Purpose-limited, no sale, Pakistan-hosted in production.</p>
               </article>
-            </div>
-          </Reveal>
-
-          <Reveal delay={0.12}>
-            <div className="insight" style={{ marginTop: 24 }}>
-              <span className="insight-lbl">SCOPE</span>
-              The agent captures facts. It does not give legal advice. Intra-statement consistency
-              analysis — never “lie detection.” Punjab WPA 2018 grounds protection referral in
-              Punjab; other provinces use their own frameworks.
             </div>
           </Reveal>
 
@@ -457,7 +373,7 @@ export default function LandingPage() {
                     <tr>
                       <td className="first">Data compliance</td>
                       <td>PDPA 2023</td>
-                      <td>Consent in Phase 0; no PII without explicit consent</td>
+                      <td>Consent-first; no PII without it</td>
                     </tr>
                     <tr>
                       <td className="first">Protection</td>
@@ -467,7 +383,7 @@ export default function LandingPage() {
                     <tr>
                       <td className="first">Analysis</td>
                       <td>Consistency engine</td>
-                      <td>Contradiction flags for counsel — not intent scoring</td>
+                      <td>Contradiction flags — not intent scoring</td>
                     </tr>
                   </tbody>
                 </table>
@@ -484,8 +400,8 @@ export default function LandingPage() {
                 SOLD.<span className="accent">TO INSTITUTIONS</span>
               </h2>
               <p className="land-chapter-sub">
-                Witnesses never pay. Gawah is sold to the parties who run intake, counsel, and
-                justice workflows — NGOs, law firms, government, and legal-aid networks.
+                Witnesses never pay. Gawah sells to NGOs, law firms, government, and legal-aid
+                networks.
               </p>
             </header>
           </Reveal>
@@ -495,58 +411,34 @@ export default function LandingPage() {
               <article className="land-feature">
                 <span className="idx">NGO</span>
                 <h3>NGOs &amp; legal aid</h3>
-                <p>
-                  Dashboard seats for statement review, consistency flags, protection referrals, and
-                  cluster maps — the launch buyer and grant-aligned path.
-                </p>
+                <p>Dashboard seats for review, flags, and referrals — the launch buyer.</p>
               </article>
               <article className="land-feature">
                 <span className="idx">FIRM</span>
                 <h3>Law firms</h3>
-                <p>
-                  Case prep for counsel teams — structured §161 records, conflict surfaces, and
-                  multi-witness intelligence without manual cross-referencing.
-                </p>
+                <p>Case prep — structured §161 records and multi-witness intelligence.</p>
               </article>
               <article className="land-feature">
                 <span className="idx">GOV</span>
                 <h3>Government</h3>
-                <p>
-                  Provincial and institutional buyers for scaled witness intake, FIR-pipeline
-                  partnership, and justice-sector deployment — longer procurement, larger seat.
-                </p>
+                <p>Provincial buyers for scaled intake and FIR-pipeline partnership.</p>
               </article>
             </div>
           </Reveal>
 
           <Reveal delay={0.12}>
-            <div className="land-split" style={{ marginTop: 20 }}>
-              <div className="bento">
-                <div className="bento-h">
-                  <span className="dot dot-o" />
-                  MONETIZATION
-                </div>
-                <div className="bento-body kv-grid">
-                  <div className="kv-k">Buyers</div>
-                  <div className="kv-v">NGOs · law firms · government · legal aid</div>
-                  <div className="kv-k">Price</div>
-                  <div className="kv-v">Org / seat licensing — ~$50–200 / month to start</div>
-                  <div className="kv-k">Witness</div>
-                  <div className="kv-v">Statement capture stays free</div>
-                  <div className="kv-k">Scale</div>
-                  <div className="kv-v">B2G &amp; firm contracts as the growth lane</div>
-                </div>
+            <div className="bento" style={{ marginTop: 20 }}>
+              <div className="bento-h">
+                <span className="dot dot-o" />
+                MONETIZATION
               </div>
-              <div className="bento">
-                <div className="bento-h">
-                  <span className="dot dot-k" />
-                  FUNDING PATH
-                </div>
-                <div className="bento-body" style={{ fontSize: 14, lineHeight: 1.65 }}>
-                  Grant-eligible with UN Women, USAID, and OSF-aligned legal aid for NGO launch.
-                  Parallel sales to private law firms and government justice programs fund
-                  sustainability — FIR pipeline partnership is the long-term institutional seat.
-                </div>
+              <div className="bento-body kv-grid">
+                <div className="kv-k">Price</div>
+                <div className="kv-v">Org / seat licensing — ~$50–200 / month to start</div>
+                <div className="kv-k">Witness</div>
+                <div className="kv-v">Statement capture stays free</div>
+                <div className="kv-k">Funding</div>
+                <div className="kv-v">Grant-eligible (UN Women, USAID) + firm &amp; gov contracts</div>
               </div>
             </div>
           </Reveal>
@@ -559,10 +451,7 @@ export default function LandingPage() {
               <h2 className="land-chapter-title">
                 FUTURE.<span className="accent">WORK</span>
               </h2>
-              <p className="land-chapter-sub">
-                Roadmap beyond the PSTN MVP — deeper signal analysis, formal deposition workflow,
-                and native mobile reach for counsel and witnesses.
-              </p>
+              <p className="land-chapter-sub">Beyond the PSTN MVP — not shipped claims.</p>
             </header>
           </Reveal>
 
@@ -571,37 +460,18 @@ export default function LandingPage() {
               <article className="land-feature">
                 <span className="idx">SIGNAL</span>
                 <h3>Lie detection</h3>
-                <p>
-                  Multi-modal analysis across text and voice — prosody, hesitation, and narrative
-                  cues — as an assistive layer for counsel review. Explicitly out of today’s
-                  consistency engine; never a credibility verdict.
-                </p>
+                <p>Assistive voice-cue analysis for counsel — never a credibility verdict.</p>
               </article>
               <article className="land-feature">
                 <span className="idx">PROCESS</span>
                 <h3>Deposition management</h3>
-                <p>
-                  End-to-end conduction and case management for depositions — scheduling, party
-                  roles, transcript control, and handoff across lawyers, witnesses, and other
-                  participants in the proceeding.
-                </p>
+                <p>Scheduling, roles, and transcript control across a full proceeding.</p>
               </article>
               <article className="land-feature">
                 <span className="idx">MOBILE</span>
                 <h3>Native phone apps</h3>
-                <p>
-                  Dedicated iPhone and Android applications for intake, status, and counsel
-                  workflows — alongside the phone-first PSTN channel that remains the core moat.
-                </p>
+                <p>iPhone and Android intake, alongside the phone-first PSTN core.</p>
               </article>
-            </div>
-          </Reveal>
-
-          <Reveal delay={0.14}>
-            <div className="insight" style={{ marginTop: 24 }}>
-              <span className="insight-lbl">SCOPE</span>
-              Today’s product stays phone-only §161 capture with consistency flags and cluster
-              intelligence. These items are post-MVP expansions — not shipped claims.
             </div>
           </Reveal>
         </section>
@@ -615,8 +485,7 @@ export default function LandingPage() {
                   THE ANONYMOUS.<span className="accent">WITNESS</span>
                 </h2>
                 <p className="land-chapter-sub">
-                  Can go on record without going on record — for the first time. Built for NGOs, law
-                  firms, legal aid, and government · Grant-eligible (UN Women, USAID).
+                  Built for NGOs, law firms, legal aid, and government.
                 </p>
               </header>
             </Reveal>
@@ -624,11 +493,7 @@ export default function LandingPage() {
             <Reveal delay={0.1}>
               <ul className="e-bullets" style={{ marginTop: 36, maxWidth: 920 }}>
                 <li>Voice statement in Urdu / Punjabi — no literacy required</li>
-                <li>Witness can remain anonymous — linked to a reference code, not a phone number</li>
-                <li>
-                  Reviewers see statement, consistency flags, and protection referral on the
-                  dashboard
-                </li>
+                <li>Anonymous by default — linked to a reference code, not a phone number</li>
                 <li>Immutable timestamped record — the lost-report failure mode ends here</li>
               </ul>
             </Reveal>
