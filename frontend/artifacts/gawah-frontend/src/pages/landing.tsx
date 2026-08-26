@@ -6,7 +6,6 @@ import { Reveal } from '@/components/landing/reveal';
 import { SectionRail } from '@/components/landing/section-rail';
 import { ScrambleText } from '@/components/landing/scramble-text';
 import { Magnetic } from '@/components/landing/magnetic';
-import { BorderTrail } from '@/components/border-trail';
 import { CountUp } from '@/components/count-up';
 
 export default function LandingPage() {
@@ -104,7 +103,6 @@ export default function LandingPage() {
               transition={{ duration: 0.55, delay: 0.22 }}
             >
               <div className="bento">
-                <BorderTrail />
                 <div className="bento-h">
                   <span className="dot dot-o" />
                   PRODUCT META
