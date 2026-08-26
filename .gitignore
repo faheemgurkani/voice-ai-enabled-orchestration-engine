@@ -79,3 +79,6 @@ __pycache__/
 .pytest_cache/
 
 CLAUDE.md
+
+.claude/
+.agents/
