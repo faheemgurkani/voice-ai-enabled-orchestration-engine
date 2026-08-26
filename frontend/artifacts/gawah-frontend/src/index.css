@@ -168,6 +168,7 @@
 
 /* Bento card */
 .bento {
+  position: relative;
   background: var(--e-bg);
   border: 2px solid var(--e-fg);
   transition:
@@ -365,6 +366,28 @@ table.brutal a.ref-link:focus-visible {
 }
 .marquee-star { color: var(--e-accent); }
 @keyframes mq { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.marquee:hover .marquee-track,
+.marquee:focus-within .marquee-track {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none; }
+}
+
+/* Border trail — thin light tracing a hard-edged card border */
+.border-trail-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.border-trail-dot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  filter: blur(1px);
+  box-shadow: 0 0 6px 1px color-mix(in srgb, var(--e-accent) 70%, transparent);
+}
 
 /* Insight callout block */
 .insight {

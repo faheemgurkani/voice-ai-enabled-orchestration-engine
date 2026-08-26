@@ -4,6 +4,10 @@ import { motion, useScroll, useSpring } from 'framer-motion';
 import { PageShell } from '@/components/layout/page-shell';
 import { Reveal } from '@/components/landing/reveal';
 import { SectionRail } from '@/components/landing/section-rail';
+import { ScrambleText } from '@/components/landing/scramble-text';
+import { Magnetic } from '@/components/landing/magnetic';
+import { BorderTrail } from '@/components/border-trail';
+import { CountUp } from '@/components/count-up';
 
 export default function LandingPage() {
   const { scrollYProgress } = useScroll();
@@ -53,7 +57,7 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.55, delay: 0.12 }}
               >
-                GAWAH
+                <ScrambleText text="GAWAH" duration={650} />
               </motion.h1>
 
               <motion.p
@@ -80,10 +84,12 @@ export default function LandingPage() {
               </div>
 
               <div className="land-cta-row">
-                <Link href="/demo" className="cta-btn">
-                  <span className="cta-sq">●</span>
-                  <span className="cta-lbl">Start Demo</span>
-                </Link>
+                <Magnetic>
+                  <Link href="/demo" className="cta-btn">
+                    <span className="cta-sq">●</span>
+                    <span className="cta-lbl">Start Demo</span>
+                  </Link>
+                </Magnetic>
                 <Link href="/dashboard" className="cta-btn cta-ghost">
                   <span className="cta-sq">→</span>
                   <span className="cta-lbl">Open Dashboard</span>
@@ -98,6 +104,7 @@ export default function LandingPage() {
               transition={{ duration: 0.55, delay: 0.22 }}
             >
               <div className="bento">
+                <BorderTrail />
                 <div className="bento-h">
                   <span className="dot dot-o" />
                   PRODUCT META
@@ -118,7 +125,9 @@ export default function LandingPage() {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
                 <div className="hud">
                   <div className="hud-k">Conviction Rate</div>
-                  <div className="hud-v accent">8.66%</div>
+                  <div className="hud-v accent">
+                    <CountUp value={8.66} suffix="%" decimals={2} />
+                  </div>
                 </div>
                 <div className="hud">
                   <div className="hud-k">Mission</div>
@@ -500,10 +509,12 @@ export default function LandingPage() {
 
             <Reveal delay={0.16}>
               <div className="land-cta-row" style={{ marginTop: 36 }}>
-                <Link href="/demo" className="cta-btn">
-                  <span className="cta-sq">●</span>
-                  <span className="cta-lbl">Start Demo</span>
-                </Link>
+                <Magnetic>
+                  <Link href="/demo" className="cta-btn">
+                    <span className="cta-sq">●</span>
+                    <span className="cta-lbl">Start Demo</span>
+                  </Link>
+                </Magnetic>
                 <Link href="/dashboard" className="cta-btn cta-ghost">
                   <span className="cta-sq">→</span>
                   <span className="cta-lbl">Dashboard</span>
