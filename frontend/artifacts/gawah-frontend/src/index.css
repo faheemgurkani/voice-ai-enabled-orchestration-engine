@@ -955,41 +955,13 @@ button.call-start-audio[data-lk-enabled='true'],
 }
 .topbar-link.active { color: var(--e-fg); }
 .topbar-link.active::after { transform: scaleX(1); }
-/* Demo link — same hover treatment as the ghost cta-btn (hero "Open Dashboard"): lift + hard offset shadow */
-.topbar-link--cta {
-  transition:
-    color var(--e-hover) var(--e-ease),
-    background var(--e-hover) var(--e-ease),
-    transform var(--e-hover) var(--e-ease),
-    box-shadow var(--e-hover) var(--e-ease);
-}
-.topbar-link--cta:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 var(--e-fg);
-}
-.topbar-link--cta:active {
-  transform: translate(0, 0);
-  box-shadow: 1px 1px 0 var(--e-fg);
-  transition-duration: var(--e-press);
-}
 .topbar-meta {
   display: flex;
   align-items: center;
-  gap: 10px;
-  color: var(--e-muted);
-  font-size: 11px;
-  letter-spacing: 0.18em;
   white-space: nowrap;
   flex-shrink: 0;
   margin-left: auto;
   z-index: 1;
-}
-.topbar-meta .pulse-dot {
-  width: 8px;
-  height: 8px;
-  background: var(--e-accent);
-  box-shadow: 0 0 0 0 color-mix(in srgb, var(--e-accent) 50%, transparent);
-  animation: pulse-dot 1.8s ease-out infinite;
 }
 
 /* Footer bar */
@@ -1541,6 +1513,7 @@ audio {
   background: var(--e-accent);
   animation: pulse-dot 1.6s ease-out infinite;
 }
+
 @keyframes pulse-dot {
   0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--e-accent) 55%, transparent); }
   70% { box-shadow: 0 0 0 10px transparent; }
@@ -1818,7 +1791,7 @@ audio {
   flex-direction: column;
 }
 .land-hero {
-  min-height: calc(100vh - 56px);
+  min-height: calc(95vh - 56px);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -2104,7 +2077,7 @@ audio {
 }
 .land-rail {
   position: fixed;
-  right: 18px;
+  left: 18px;
   top: 50%;
   transform: translateY(-50%);
   z-index: 35;
@@ -2135,9 +2108,9 @@ audio {
 .land-rail-item::before {
   content: attr(data-label);
   position: absolute;
-  right: 22px;
+  left: 22px;
   top: 50%;
-  transform: translateY(-50%) translateX(6px);
+  transform: translateY(-50%) translateX(-6px);
   white-space: nowrap;
   font-size: 10px;
   letter-spacing: 0.14em;
@@ -2152,20 +2125,9 @@ audio {
   transition: opacity var(--e-hover) var(--e-ease), transform var(--e-hover) var(--e-ease);
 }
 .land-rail-item:hover::before,
-.land-rail-item.active::before {
+.land-rail-item:focus-visible::before {
   opacity: 1;
   transform: translateY(-50%) translateX(0);
-}
-.land-progress {
-  position: fixed;
-  top: 56px;
-  left: 0;
-  height: 3px;
-  background: var(--e-accent);
-  z-index: 45;
-  transform-origin: left center;
-  width: 100%;
-  scale: var(--land-progress, 0) 1;
 }
 @media (max-width: 980px) {
   .land-hero-inner,
@@ -2228,7 +2190,9 @@ audio {
     transform: none;
     margin-left: auto;
   }
-  .topbar-meta { display: none; }
+  .topbar-meta {
+    margin-left: 12px;
+  }
   .page-content,
   .page-content-full {
     padding: 24px 16px 40px;

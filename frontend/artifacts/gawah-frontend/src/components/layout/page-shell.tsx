@@ -6,7 +6,6 @@ const NAV = [
   { href: '/dashboard', label: 'Dashboard', match: '/dashboard' },
   { href: '/calls', label: 'Calls', match: '/calls' },
   { href: '/clusters', label: 'Clusters', match: '/clusters' },
-  { href: '/demo', label: 'Demo', match: '/demo' },
 ] as const;
 
 export function PageShell({ children }: { children: ReactNode }) {
@@ -14,6 +13,10 @@ export function PageShell({ children }: { children: ReactNode }) {
   const [healthError, setHealthError] = useState<string | null>(null);
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const [pinned, setPinned] = useState(false);
+  // On the landing page, the hero already has its own "Open Dashboard" CTA,
+  // so the nav's Dashboard link stays hidden until the hero has been
+  // scrolled past. On every other page it's always shown.
+  const [showDashboardLink, setShowDashboardLink] = useState(true);
 
   useEffect(() => {
     const onScroll = () => setPinned(window.scrollY > 24);
@@ -21,6 +24,25 @@ export function PageShell({ children }: { children: ReactNode }) {
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  useEffect(() => {
+    if (location !== '/') {
+      setShowDashboardLink(true);
+      return;
+    }
+    const band = document.getElementById('land-band');
+    if (!band) {
+      setShowDashboardLink(true);
+      return;
+    }
+    setShowDashboardLink(false);
+    const observer = new IntersectionObserver(
+      ([entry]) => setShowDashboardLink(entry.boundingClientRect.bottom <= 0),
+      { threshold: 0 },
+    );
+    observer.observe(band);
+    return () => observer.disconnect();
+  }, [location]);
 
   useEffect(() => {
     let alive = true;
@@ -52,7 +74,7 @@ export function PageShell({ children }: { children: ReactNode }) {
             <Link
               key={item.href}
               href={item.href}
-              className={`topbar-link ${item.href === '/demo' ? 'topbar-link--cta' : ''} ${location.startsWith(item.match) ? 'active' : ''}`}
+              className={`topbar-link ${location.startsWith(item.match) ? 'active' : ''}`}
             >
               {item.label}
             </Link>
@@ -60,7 +82,6 @@ export function PageShell({ children }: { children: ReactNode }) {
         </div>
         <div className="topbar-meta">
           <Link href="/demo" className="cta-btn">
-            <span className="cta-sq">●</span>
             <span className="cta-lbl">Start Demo</span>
           </Link>
         </div>

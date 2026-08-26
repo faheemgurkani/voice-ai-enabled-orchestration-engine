@@ -1,31 +1,15 @@
-import { useEffect } from 'react';
 import { Link } from 'wouter';
-import { motion, useScroll, useSpring } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { PageShell } from '@/components/layout/page-shell';
 import { Reveal } from '@/components/landing/reveal';
 import { SectionRail } from '@/components/landing/section-rail';
 import { ScrambleText } from '@/components/landing/scramble-text';
-import { Magnetic } from '@/components/landing/magnetic';
 import { CountUp } from '@/components/count-up';
 
 export default function LandingPage() {
-  const { scrollYProgress } = useScroll();
-  const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 28, mass: 0.35 });
-
-  useEffect(() => {
-    const unsub = progress.on('change', (v) => {
-      document.documentElement.style.setProperty('--land-progress', String(v));
-    });
-    return () => {
-      unsub();
-      document.documentElement.style.removeProperty('--land-progress');
-    };
-  }, [progress]);
-
   return (
     <PageShell>
       <div className="land dot-bg">
-        <div className="land-progress" aria-hidden />
         <SectionRail />
 
         {/* ── Hero ── */}
@@ -83,12 +67,6 @@ export default function LandingPage() {
               </div>
 
               <div className="land-cta-row">
-                <Magnetic>
-                  <Link href="/demo" className="cta-btn">
-                    <span className="cta-sq">●</span>
-                    <span className="cta-lbl">Start Demo</span>
-                  </Link>
-                </Magnetic>
                 <Link href="/dashboard" className="cta-btn cta-ghost">
                   <span className="cta-sq">→</span>
                   <span className="cta-lbl">Open Dashboard</span>
@@ -136,7 +114,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <div className="land-band">
+        <div className="land-band" id="land-band">
           <div className="marquee" style={{ border: 'none' }}>
             <div className="marquee-track">
               GO ON RECORD WITHOUT GOING ON RECORD <span className="marquee-star">▣</span> PHONE-ONLY
@@ -505,21 +483,6 @@ export default function LandingPage() {
                 <li>Anonymous by default — linked to a reference code, not a phone number</li>
                 <li>Immutable timestamped record — the lost-report failure mode ends here</li>
               </ul>
-            </Reveal>
-
-            <Reveal delay={0.16}>
-              <div className="land-cta-row" style={{ marginTop: 36 }}>
-                <Magnetic>
-                  <Link href="/demo" className="cta-btn">
-                    <span className="cta-sq">●</span>
-                    <span className="cta-lbl">Start Demo</span>
-                  </Link>
-                </Magnetic>
-                <Link href="/dashboard" className="cta-btn cta-ghost">
-                  <span className="cta-sq">→</span>
-                  <span className="cta-lbl">Dashboard</span>
-                </Link>
-              </div>
             </Reveal>
           </div>
         </section>

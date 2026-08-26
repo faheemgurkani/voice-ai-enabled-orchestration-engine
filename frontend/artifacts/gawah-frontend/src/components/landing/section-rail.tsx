@@ -12,6 +12,7 @@ const SECTIONS = [
 
 export function SectionRail() {
   const [active, setActive] = useState<string>('problem');
+  const [pastHero, setPastHero] = useState(false);
 
   useEffect(() => {
     const nodes = SECTIONS.map((s) => document.getElementById(s.id)).filter(
@@ -32,6 +33,23 @@ export function SectionRail() {
     nodes.forEach((n) => observer.observe(n));
     return () => observer.disconnect();
   }, []);
+
+  useEffect(() => {
+    // Only show the rail once the page has scrolled fully past the marquee
+    // band (the black ticker strip right after the hero) — not while it's
+    // still on screen or before it's been reached.
+    const band = document.getElementById('land-band');
+    if (!band) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setPastHero(entry.boundingClientRect.bottom <= 0),
+      { threshold: 0 },
+    );
+    observer.observe(band);
+    return () => observer.disconnect();
+  }, []);
+
+  if (!pastHero) return null;
 
   return (
     <nav className="land-rail" aria-label="Landing sections">
