@@ -16,7 +16,7 @@ export function PageShell({ children }: { children: ReactNode }) {
   // On the landing page, the hero already has its own "Open Dashboard" CTA,
   // so the nav's Dashboard link stays hidden until the hero has been
   // scrolled past. On every other page it's always shown.
-  const [showDashboardLink, setShowDashboardLink] = useState(true);
+  const [showDashboardLink, setShowDashboardLink] = useState(() => window.location.pathname !== '/');
 
   useEffect(() => {
     const onScroll = () => setPinned(window.scrollY > 24);
@@ -30,17 +30,20 @@ export function PageShell({ children }: { children: ReactNode }) {
       setShowDashboardLink(true);
       return;
     }
-    const band = document.getElementById('land-band');
-    if (!band) {
+    const heroCta = document.getElementById('hero-dashboard-cta');
+    if (!heroCta) {
       setShowDashboardLink(true);
       return;
     }
     setShowDashboardLink(false);
+    // Fires the instant the hero's own "Open Dashboard" button scrolls out
+    // of view — no extra threshold/margin, so the nav link takes its place
+    // as soon as the hero one is gone, not noticeably later.
     const observer = new IntersectionObserver(
-      ([entry]) => setShowDashboardLink(entry.boundingClientRect.bottom <= 0),
+      ([entry]) => setShowDashboardLink(!entry.isIntersecting && entry.boundingClientRect.top < 0),
       { threshold: 0 },
     );
-    observer.observe(band);
+    observer.observe(heroCta);
     return () => observer.disconnect();
   }, [location]);
 
@@ -70,15 +73,22 @@ export function PageShell({ children }: { children: ReactNode }) {
           GAWAH گواہ
         </Link>
         <div className="topbar-links">
-          {NAV.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`topbar-link ${location.startsWith(item.match) ? 'active' : ''}`}
-            >
-              {item.label}
-            </Link>
-          ))}
+          {NAV.map((item) => {
+            const isDashboard = item.href === '/dashboard';
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`topbar-link ${location.startsWith(item.match) ? 'active' : ''} ${
+                  isDashboard ? `topbar-link--gated${showDashboardLink ? '' : ' is-hidden'}` : ''
+                }`}
+                aria-hidden={isDashboard && !showDashboardLink ? true : undefined}
+                tabIndex={isDashboard && !showDashboardLink ? -1 : undefined}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
         </div>
         <div className="topbar-meta">
           <Link href="/demo" className="cta-btn">

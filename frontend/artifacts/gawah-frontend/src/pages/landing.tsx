@@ -2,7 +2,6 @@ import { Link } from 'wouter';
 import { motion } from 'framer-motion';
 import { PageShell } from '@/components/layout/page-shell';
 import { Reveal } from '@/components/landing/reveal';
-import { SectionRail } from '@/components/landing/section-rail';
 import { ScrambleText } from '@/components/landing/scramble-text';
 import { CountUp } from '@/components/count-up';
 
@@ -10,20 +9,10 @@ export default function LandingPage() {
   return (
     <PageShell>
       <div className="land dot-bg">
-        <SectionRail />
-
         {/* ── Hero ── */}
         <section className="land-hero">
           <div className="land-hero-inner">
             <div>
-              <div className="land-kicker">
-                <span
-                  className="accent-sq"
-                  style={{ width: 12, height: 12, background: 'var(--e-accent)', display: 'inline-block' }}
-                />
-                // SECTION : LANDING
-              </div>
-
               <motion.div
                 className="land-urdu"
                 initial={{ opacity: 0, y: 12 }}
@@ -67,7 +56,7 @@ export default function LandingPage() {
               </div>
 
               <div className="land-cta-row">
-                <Link href="/dashboard" className="cta-btn cta-ghost">
+                <Link id="hero-dashboard-cta" href="/dashboard" className="cta-btn cta-ghost">
                   <span className="cta-sq">→</span>
                   <span className="cta-lbl">Open Dashboard</span>
                 </Link>
