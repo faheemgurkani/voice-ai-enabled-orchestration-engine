@@ -368,19 +368,10 @@ def cmd_seed(_: argparse.Namespace) -> None:
 # ── run servers ──────────────────────────────────────────────────────────────
 
 def _backend_cmd(py: Path) -> list[str]:
-    uvicorn = venv_bin("uvicorn")
-    if uvicorn.exists():
-        return [
-            str(uvicorn),
-            "app.main:app",
-            "--app-dir",
-            str(BACKEND),
-            "--reload",
-            "--host",
-            "0.0.0.0",
-            "--port",
-            "8000",
-        ]
+    # Always launch via `python -m uvicorn` rather than the venv's uvicorn
+    # binary directly: a space anywhere in the repo path (e.g. "Misc.
+    # Projects") breaks the shebang line pip writes into that binary, which
+    # then fails with a misleading FileNotFoundError on exec.
     return [
         str(py),
         "-m",
