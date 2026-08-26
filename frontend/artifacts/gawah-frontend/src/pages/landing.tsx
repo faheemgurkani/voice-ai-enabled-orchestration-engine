@@ -258,44 +258,38 @@ export default function LandingPage() {
             </header>
           </Reveal>
 
-          <div className="land-split">
-            <Reveal delay={0.05}>
-              <div className="bento" style={{ height: '100%' }}>
-                <div className="bento-h">
+          <Reveal delay={0.06}>
+            <div className="bento land-diptych">
+              <div className="land-diptych-half">
+                <div className="land-diptych-label">
                   <span className="dot dot-o" />
                   PER.CALL · CONSISTENCY
                 </div>
-                <div className="bento-body page-stack" style={{ gap: 16 }}>
-                  <p style={{ margin: 0, lineHeight: 1.65 }}>
-                    Flags contradictions within a single statement, live and on a deeper post-call
-                    pass — before they surface at trial.
-                  </p>
-                  <ul className="e-bullets">
-                    <li>Typed flags: temporal · spatial · identity · sequence · numerical</li>
-                    <li>Side-by-side A/B quotes on the statement dashboard</li>
-                  </ul>
-                </div>
+                <p style={{ margin: 0, lineHeight: 1.65 }}>
+                  Flags contradictions within a single statement, live and on a deeper post-call
+                  pass — before they surface at trial.
+                </p>
+                <ul className="e-bullets" style={{ marginTop: 16 }}>
+                  <li>Typed flags: temporal · spatial · identity · sequence · numerical</li>
+                  <li>Side-by-side A/B quotes on the statement dashboard</li>
+                </ul>
               </div>
-            </Reveal>
-            <Reveal delay={0.12}>
-              <div className="bento" style={{ height: '100%' }}>
-                <div className="bento-h">
+              <div className="land-diptych-half">
+                <div className="land-diptych-label">
                   <span className="dot dot-k" />
                   CLUSTER · CORROBORATION
                 </div>
-                <div className="bento-body page-stack" style={{ gap: 16 }}>
-                  <p style={{ margin: 0, lineHeight: 1.65 }}>
-                    Groups witnesses describing the same incident and maps field-level agreement —
-                    who, what, when, where — so lawyers stop cross-referencing by hand.
-                  </p>
-                  <ul className="e-bullets">
-                    <li>Field map: agreement · partial · conflict · collusion warning</li>
-                    <li>Near-identical phrasing flags collusion, not a perfect score</li>
-                  </ul>
-                </div>
+                <p style={{ margin: 0, lineHeight: 1.65 }}>
+                  Groups witnesses describing the same incident and maps field-level agreement —
+                  who, what, when, where — so lawyers stop cross-referencing by hand.
+                </p>
+                <ul className="e-bullets" style={{ marginTop: 16 }}>
+                  <li>Field map: agreement · partial · conflict · collusion warning</li>
+                  <li>Near-identical phrasing flags collusion, not a perfect score</li>
+                </ul>
               </div>
-            </Reveal>
-          </div>
+            </div>
+          </Reveal>
 
           <Reveal delay={0.14}>
             <div className="insight" style={{ marginTop: 24 }}>
@@ -463,22 +457,30 @@ export default function LandingPage() {
           </Reveal>
 
           <Reveal delay={0.08}>
-            <div className="land-feature-row">
-              <article className="land-feature">
-                <span className="idx">SIGNAL</span>
-                <h3>Lie detection</h3>
-                <p>Assistive voice-cue analysis for counsel — never a credibility verdict.</p>
-              </article>
-              <article className="land-feature">
-                <span className="idx">PROCESS</span>
-                <h3>Deposition management</h3>
-                <p>Scheduling, roles, and transcript control across a full proceeding.</p>
-              </article>
-              <article className="land-feature">
-                <span className="idx">MOBILE</span>
-                <h3>Native phone apps</h3>
-                <p>iPhone and Android intake, alongside the phone-first PSTN core.</p>
-              </article>
+            <div className="bento">
+              <div className="bento-body land-roadmap">
+                <div className="land-roadmap-row">
+                  <span className="land-roadmap-tag">SIGNAL</span>
+                  <p className="land-roadmap-copy">
+                    <strong>Lie detection.</strong> Assistive voice-cue analysis for counsel — never
+                    a credibility verdict.
+                  </p>
+                </div>
+                <div className="land-roadmap-row">
+                  <span className="land-roadmap-tag">PROCESS</span>
+                  <p className="land-roadmap-copy">
+                    <strong>Deposition management.</strong> Scheduling, roles, and transcript
+                    control across a full proceeding.
+                  </p>
+                </div>
+                <div className="land-roadmap-row">
+                  <span className="land-roadmap-tag">MOBILE</span>
+                  <p className="land-roadmap-copy">
+                    <strong>Native phone apps.</strong> iPhone and Android intake, alongside the
+                    phone-first PSTN core.
+                  </p>
+                </div>
+              </div>
             </div>
           </Reveal>
         </section>
