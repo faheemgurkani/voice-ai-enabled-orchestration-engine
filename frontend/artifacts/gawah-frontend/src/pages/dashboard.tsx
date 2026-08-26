@@ -5,6 +5,7 @@ import { fetchStatements, fetchKpis } from '@/lib/api';
 import { PageShell } from '@/components/layout/page-shell';
 import { StatusBadge, LanguageChip, FlagBadge, ScoreBar } from '@/components/badges';
 import { ESelect } from '@/components/e-select';
+import { CountUp } from '@/components/count-up';
 
 const STATUS_OPTIONS = [
   { value: 'all', label: 'ALL' },
@@ -89,24 +90,32 @@ export default function DashboardPage() {
         <div className="kpi-grid">
           <div className="hud">
             <div className="hud-k">Total Statements</div>
-            <div className="hud-v vt">{loadingKpis ? '-' : (kpis?.total_statements ?? 0)}</div>
+            <div className="hud-v vt">
+              {loadingKpis ? '-' : <CountUp value={kpis?.total_statements ?? 0} duration={0.8} />}
+            </div>
           </div>
           <div className="hud">
             <div className="hud-k">Urgent</div>
-            <div className="hud-v vt accent">{loadingKpis ? '-' : (kpis?.urgent_count ?? 0)}</div>
+            <div className="hud-v vt accent">
+              {loadingKpis ? '-' : <CountUp value={kpis?.urgent_count ?? 0} duration={0.8} />}
+            </div>
           </div>
           <div className="hud">
             <div className="hud-k">Clusters</div>
-            <div className="hud-v vt">{loadingKpis ? '-' : (kpis?.cluster_count ?? 0)}</div>
+            <div className="hud-v vt">
+              {loadingKpis ? '-' : <CountUp value={kpis?.cluster_count ?? 0} duration={0.8} />}
+            </div>
           </div>
           <div className="hud">
             <div className="hud-k">Avg Corroboration</div>
             <div className="hud-v vt">
-              {loadingKpis
-                ? '-'
-                : kpis?.avg_corroboration
-                  ? `${Math.round(kpis.avg_corroboration * 100)}%`
-                  : 'N/A'}
+              {loadingKpis ? (
+                '-'
+              ) : kpis?.avg_corroboration ? (
+                <CountUp value={Math.round(kpis.avg_corroboration * 100)} suffix="%" duration={0.8} />
+              ) : (
+                'N/A'
+              )}
             </div>
           </div>
         </div>
