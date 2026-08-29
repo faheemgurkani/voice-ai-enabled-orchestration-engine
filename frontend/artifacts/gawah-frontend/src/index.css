@@ -2061,6 +2061,31 @@ audio {
   grid-template-columns: 100px minmax(0, 1fr) auto;
   align-items: center;
   gap: 10px;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 3px 4px;
+  margin: -3px -4px;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  transition: background 150ms var(--e-ease);
+}
+.pw-gbv-row:hover,
+.pw-gbv-row:focus-visible,
+.pw-gbv-row.is-hover {
+  background: color-mix(in srgb, var(--e-accent) 12%, transparent);
+  outline: none;
+}
+.pw-gbv-row:hover .pw-gbv-fill,
+.pw-gbv-row:focus-visible .pw-gbv-fill,
+.pw-gbv-row.is-hover .pw-gbv-fill {
+  background: var(--e-fg);
+}
+.pw-gbv-row:hover .pw-gbv-value,
+.pw-gbv-row:focus-visible .pw-gbv-value,
+.pw-gbv-row.is-hover .pw-gbv-value {
+  color: var(--e-accent);
 }
 .pw-gbv-label {
   font-size: 11px;
@@ -2091,12 +2116,20 @@ audio {
 
 /* Line graph — same GBV dataset as the bars, drawn as a connected line */
 .pw-trend { display: flex; flex-direction: column; gap: 6px; }
-.pw-trend-svg { width: 100%; height: 130px; display: block; overflow: visible; }
+.pw-trend-svg { width: 100%; height: 140px; display: block; overflow: visible; }
+.pw-trend-pt { cursor: pointer; outline: none; }
 .pw-trend-labels {
   display: flex;
   justify-content: space-between;
   font-size: 10px;
   color: var(--e-muted);
+}
+.pw-trend-labels span {
+  transition: color 150ms var(--e-ease);
+}
+.pw-trend-labels span.is-hover {
+  color: var(--e-accent);
+  font-weight: 700;
 }
 
 /* Compact annotation list under a top-card stat/bar */

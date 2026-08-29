@@ -117,11 +117,20 @@ export function GbvMiniBars() {
     { label: 'Honour killings', value: 547 },
   ];
   const max = rows[0].value;
+  const [hover, setHover] = useState<number | null>(null);
 
   return (
     <div ref={ref} className="pw-gbv">
-      {rows.map((r) => (
-        <div key={r.label} className="pw-gbv-row">
+      {rows.map((r, i) => (
+        <button
+          key={r.label}
+          type="button"
+          className={`pw-gbv-row${hover === i ? ' is-hover' : ''}`}
+          onMouseEnter={() => setHover(i)}
+          onMouseLeave={() => setHover(null)}
+          onFocus={() => setHover(i)}
+          onBlur={() => setHover(null)}
+        >
           <div className="pw-gbv-label">{r.label}</div>
           <div className="pw-gbv-track">
             <div
@@ -130,7 +139,7 @@ export function GbvMiniBars() {
             />
           </div>
           <div className="pw-gbv-value">{r.value.toLocaleString()}</div>
-        </div>
+        </button>
       ))}
     </div>
   );
@@ -156,15 +165,21 @@ export function GbvTrendLine() {
     { label: 'Domestic v.', value: 2238 },
     { label: 'Honour k.', value: 547 },
   ];
-  const max = points[0].value;
   const w = 300;
-  const h = 130;
-  const padTop = 22;
+  const h = 140;
+  const padTop = 26;
   const plotH = h - padTop;
   const step = w / (points.length - 1);
+  // Values span two orders of magnitude — a linear y-scale crowds the
+  // bottom three points together and their labels collide. Position points
+  // on a log scale (real values still shown verbatim in the labels).
+  const logs = points.map((p) => Math.log(p.value));
+  const logMax = Math.max(...logs);
+  const logMin = Math.min(...logs);
+  const logRange = logMax - logMin;
   const coords = points.map((p, i) => ({
     x: i * step,
-    y: padTop + (plotH - (p.value / max) * plotH),
+    y: padTop + plotH - ((Math.log(p.value) - logMin) / logRange) * plotH,
   }));
   const linePath = coords.map((c, i) => `${i === 0 ? 'M' : 'L'}${c.x},${c.y}`).join(' ');
   const areaPath = `${linePath} L${w},${h} L0,${h} Z`;
@@ -173,6 +188,7 @@ export function GbvTrendLine() {
     strokeDasharray: pathLength,
     strokeDashoffset: reduce || on ? 0 : pathLength,
   };
+  const [hover, setHover] = useState<number | null>(null);
 
   return (
     <div className="pw-trend">
@@ -206,16 +222,34 @@ export function GbvTrendLine() {
           style={{ ...dashProps, transition: 'stroke-dashoffset 900ms var(--e-ease)' }}
         />
         {coords.map((c, i) => (
-          <g key={i}>
-            <circle cx={c.x} cy={c.y} r="4.5" fill="var(--e-bg)" stroke="var(--e-accent)" strokeWidth="2" />
+          <g
+            key={i}
+            className="pw-trend-pt"
+            tabIndex={0}
+            onMouseEnter={() => setHover(i)}
+            onMouseLeave={() => setHover(null)}
+            onFocus={() => setHover(i)}
+            onBlur={() => setHover(null)}
+          >
+            {/* generous invisible hit area so the marker is easy to hover/focus */}
+            <circle cx={c.x} cy={c.y} r="14" fill="transparent" />
+            <circle
+              cx={c.x}
+              cy={c.y}
+              r={hover === i ? 6.5 : 4.5}
+              fill={hover === i ? 'var(--e-accent)' : 'var(--e-bg)'}
+              stroke="var(--e-accent)"
+              strokeWidth="2"
+              style={{ transition: 'r 150ms var(--e-ease), fill 150ms var(--e-ease)' }}
+            />
             <text
               x={c.x}
-              y={c.y - 10}
+              y={c.y - 12}
               textAnchor={i === 0 ? 'start' : i === points.length - 1 ? 'end' : 'middle'}
-              fontSize="11"
+              fontSize={hover === i ? 12 : 11}
               fontFamily="'JetBrains Mono', monospace"
               fontWeight={700}
-              fill="var(--e-fg)"
+              fill={hover === i ? 'var(--e-accent)' : 'var(--e-fg)'}
             >
               {points[i].value.toLocaleString()}
             </text>
@@ -223,8 +257,10 @@ export function GbvTrendLine() {
         ))}
       </svg>
       <div className="pw-trend-labels">
-        {points.map((p) => (
-          <span key={p.label}>{p.label}</span>
+        {points.map((p, i) => (
+          <span key={p.label} className={hover === i ? 'is-hover' : undefined}>
+            {p.label}
+          </span>
         ))}
       </div>
     </div>
