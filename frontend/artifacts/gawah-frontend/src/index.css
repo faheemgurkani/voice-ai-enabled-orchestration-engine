@@ -2271,30 +2271,6 @@ audio {
   .pw-charts > :last-child { padding-left: 0; }
 }
 
-/* Diptych — one bordered panel, internally divided (used once, for Intelligence) */
-.land-diptych {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-}
-.land-diptych > .land-diptych-half {
-  padding: clamp(20px, 3vw, 32px);
-}
-.land-diptych > .land-diptych-half + .land-diptych-half {
-  border-left: 2px solid var(--e-fg);
-}
-.land-diptych-label {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 12px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  font-weight: 700;
-  margin-bottom: 16px;
-}
-.land-diptych-label .dot { width: 10px; height: 10px; flex-shrink: 0; }
-.land-diptych-label .dot-o { background: var(--e-accent); }
-.land-diptych-label .dot-k { background: var(--e-fg); }
 /* Roadmap list — compact, deliberately quieter than the feature-row cards (used once, for Future) */
 .land-roadmap {
   display: flex;
@@ -2361,6 +2337,78 @@ audio {
   flex-direction: column;
   gap: 14px;
 }
+
+/* Intelligence-layer explorer — click an item in the left list to expand
+   it and crossfade the matching screenshot into the right panel. */
+.intel-board {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 28px;
+  align-items: stretch;
+}
+.intel-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.intel-item {
+  width: 100%;
+  text-align: left;
+  border: 2px solid var(--e-fg);
+  background: var(--e-bg);
+  padding: 20px 22px;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  overflow: hidden;
+  transition: box-shadow var(--e-hover) var(--e-ease), border-color var(--e-hover) var(--e-ease);
+}
+.intel-item:hover {
+  box-shadow: 4px 4px 0 var(--e-fg);
+}
+.intel-item.is-active {
+  border-color: var(--e-accent);
+  box-shadow: 4px 4px 0 var(--e-accent);
+}
+.intel-item-h {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.intel-item-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 14px;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--e-fg-soft);
+}
+.intel-item-body p { margin: 0; }
+.intel-visual {
+  display: flex;
+  flex-direction: column;
+}
+.intel-visual > div {
+  flex: 1;
+  display: flex;
+}
+.intel-visual .hero-screenshot {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.intel-visual .hero-screenshot-frame {
+  flex: 1;
+  height: auto;
+  aspect-ratio: auto;
+}
+@media (max-width: 980px) {
+  .intel-board { grid-template-columns: 1fr; }
+}
 /* Slider in the sticky column should match the card stack's own height,
    not its own fixed clamp — the two sit side by side and must line up.
    The slide itself (the bordered bento) has to absorb the extra height,
@@ -2385,11 +2433,6 @@ audio {
   flex: 1;
   height: auto;
   aspect-ratio: auto;
-}
-.land-feature-row {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
 }
 .land-feature {
   border: 2px solid var(--e-fg);
@@ -2425,19 +2468,145 @@ audio {
   color: var(--e-fg-soft);
   flex: 1;
 }
-.land-horizon {
+/* Sold-to-institutions carousel — active buyer card expands with an accent
+   border, its description, and a progress bar; others collapse to a title. */
+.inst-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+.inst-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.inst-visual {
+  border: 2px solid var(--e-fg);
+  background: var(--e-bg-2);
+  min-height: clamp(140px, 14vw, 180px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color var(--e-hover) var(--e-ease), box-shadow var(--e-hover) var(--e-ease);
+}
+.inst-card:hover .inst-visual {
+  box-shadow: 4px 4px 0 var(--e-fg);
+}
+.inst-card.is-active .inst-visual {
+  border-color: var(--e-accent);
+  box-shadow: 4px 4px 0 var(--e-accent);
+}
+.inst-idx {
+  font-family: 'VT323', monospace;
+  font-size: clamp(44px, 6vw, 72px);
+  letter-spacing: 0.06em;
+  color: color-mix(in srgb, var(--e-fg) 22%, transparent);
+  transition: color var(--e-hover) var(--e-ease);
+}
+.inst-card.is-active .inst-idx {
+  color: color-mix(in srgb, var(--e-accent) 60%, transparent);
+}
+.inst-progress-track {
+  height: 2px;
+  background: var(--e-bg-2);
+  margin-top: 10px;
+  overflow: hidden;
+}
+.inst-progress-fill {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: var(--e-accent);
+  transform-origin: left;
+  animation-name: inst-grow;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+@keyframes inst-grow {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+.inst-caption {
+  padding-top: 12px;
+}
+.inst-caption h3 {
+  margin: 0;
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 800;
+}
+.inst-caption p {
+  margin: 6px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--e-fg-soft);
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.35s var(--e-ease), opacity 0.3s var(--e-ease);
+}
+.inst-card.is-active .inst-caption p {
+  max-height: 120px;
+  opacity: 1;
+}
+
+/* Legal-section carousel — 3 cards visible, the rest reachable by drag/scroll or the arrows */
+.carousel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.carousel-track {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: minmax(260px, 1fr);
+  grid-auto-columns: calc((100% - 2 * 14px) / 3);
   gap: 14px;
   overflow-x: auto;
-  padding-bottom: 8px;
   scroll-snap-type: x mandatory;
-  scrollbar-width: thin;
+  scrollbar-width: none;
+  padding-bottom: 2px;
 }
-.land-horizon > * {
-  scroll-snap-align: start;
-  min-width: 260px;
+.carousel-track::-webkit-scrollbar { display: none; }
+.carousel-track > * { scroll-snap-align: start; }
+.carousel-nav {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.carousel-arrow {
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--e-fg);
+  background: var(--e-bg);
+  color: var(--e-fg);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: box-shadow var(--e-hover) var(--e-ease), transform var(--e-hover) var(--e-ease), opacity var(--e-ease);
+}
+.carousel-arrow:hover:not(:disabled) {
+  box-shadow: 4px 4px 0 var(--e-fg);
+  transform: translate(-2px, -2px);
+}
+.carousel-arrow:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+@media (max-width: 980px) {
+  .carousel-track { grid-auto-columns: calc((100% - 14px) / 2); }
+}
+@media (max-width: 640px) {
+  .carousel-track { grid-auto-columns: 85%; }
 }
 .land-close {
   background: var(--e-fg);
@@ -2488,15 +2657,10 @@ audio {
   .land-hero-inner,
   .land-split,
   .land-sticky-board,
-  .land-feature-row,
-  .land-diptych,
   .land-roadmap-row {
     grid-template-columns: 1fr;
   }
-  .land-diptych > .land-diptych-half + .land-diptych-half {
-    border-left: none;
-    border-top: 2px solid var(--e-fg);
-  }
+  .inst-row { grid-template-columns: 1fr; }
   .land-sticky-col { position: static; }
 }
 @media (max-width: 768px) {

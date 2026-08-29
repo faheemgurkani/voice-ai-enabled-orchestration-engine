@@ -5,6 +5,9 @@ import { Reveal } from '@/components/landing/reveal';
 import { ScrambleText } from '@/components/landing/scramble-text';
 import { HeroSlider } from '@/components/landing/hero-slider';
 import { HeroScreenshotSlide } from '@/components/landing/hero-screenshot-slide';
+import { IntelligenceExplorer } from '@/components/landing/intelligence-explorer';
+import { CardCarousel } from '@/components/landing/card-carousel';
+import { InstitutionCarousel } from '@/components/landing/institution-carousel';
 import { GbvMiniBars, GbvTrendLine, SplitStat } from '@/components/landing/problem-visuals';
 
 export default function LandingPage() {
@@ -398,36 +401,42 @@ export default function LandingPage() {
           </Reveal>
 
           <Reveal delay={0.06}>
-            <div className="bento land-diptych">
-              <div className="land-diptych-half">
-                <div className="land-diptych-label">
-                  <span className="dot dot-o" />
-                  PER.CALL · CONSISTENCY
-                </div>
-                <p style={{ margin: 0, lineHeight: 1.65 }}>
-                  Flags contradictions within a single statement, live and on a deeper post-call
-                  pass — before they surface at trial.
-                </p>
-                <ul className="e-bullets" style={{ marginTop: 16 }}>
-                  <li>Typed flags: temporal · spatial · identity · sequence · numerical</li>
-                  <li>Side-by-side A/B quotes on the statement dashboard</li>
-                </ul>
-              </div>
-              <div className="land-diptych-half">
-                <div className="land-diptych-label">
-                  <span className="dot dot-k" />
-                  CLUSTER · CORROBORATION
-                </div>
-                <p style={{ margin: 0, lineHeight: 1.65 }}>
-                  Groups witnesses describing the same incident and maps field-level agreement —
-                  who, what, when, where — so lawyers stop cross-referencing by hand.
-                </p>
-                <ul className="e-bullets" style={{ marginTop: 16 }}>
-                  <li>Field map: agreement · partial · conflict · collusion warning</li>
-                  <li>Near-identical phrasing flags collusion, not a perfect score</li>
-                </ul>
-              </div>
-            </div>
+            <IntelligenceExplorer
+              items={[
+                {
+                  id: 'consistency',
+                  dot: 'dot-o',
+                  title: 'PER.CALL · CONSISTENCY',
+                  description:
+                    'Flags contradictions within a single statement, live and on a deeper post-call pass — before they surface at trial.',
+                  bullets: [
+                    'Typed flags: temporal · spatial · identity · sequence · numerical',
+                    'Side-by-side A/B quotes on the statement dashboard',
+                  ],
+                  shot: {
+                    src: '/demo/statement-anon-detail.png',
+                    label: 'PREVIEW · CONSISTENCY FLAGS',
+                    alt: 'Statement detail with an urgent intimidation escalation banner and structured §161 fields',
+                  },
+                },
+                {
+                  id: 'corroboration',
+                  dot: 'dot-k',
+                  title: 'CLUSTER · CORROBORATION',
+                  description:
+                    'Groups witnesses describing the same incident and maps field-level agreement — who, what, when, where — so lawyers stop cross-referencing by hand.',
+                  bullets: [
+                    'Field map: agreement · partial · conflict · collusion warning',
+                    'Near-identical phrasing flags collusion, not a perfect score',
+                  ],
+                  shot: {
+                    src: '/demo/field-corroboration.png',
+                    label: 'PREVIEW · FIELD CORROBORATION',
+                    alt: 'Field-level corroboration table across three linked witness statements, with a collusion warning',
+                  },
+                },
+              ]}
+            />
           </Reveal>
 
           <Reveal delay={0.14}>
@@ -465,7 +474,7 @@ export default function LandingPage() {
           </Reveal>
 
           <Reveal delay={0.06}>
-            <div className="land-horizon">
+            <CardCarousel>
               <article className="land-feature">
                 <span className="idx">§161</span>
                 <h3>Examination</h3>
@@ -486,7 +495,7 @@ export default function LandingPage() {
                 <h3>2023 data law</h3>
                 <p>Consent before facts. Purpose-limited, no sale, Pakistan-hosted in production.</p>
               </article>
-            </div>
+            </CardCarousel>
           </Reveal>
 
           <Reveal delay={0.16}>
@@ -547,23 +556,28 @@ export default function LandingPage() {
           </Reveal>
 
           <Reveal delay={0.06}>
-            <div className="land-feature-row">
-              <article className="land-feature">
-                <span className="idx">NGO</span>
-                <h3>NGOs &amp; legal aid</h3>
-                <p>Dashboard seats for review, flags, and referrals — the launch buyer.</p>
-              </article>
-              <article className="land-feature">
-                <span className="idx">FIRM</span>
-                <h3>Law firms</h3>
-                <p>Case prep — structured §161 records and multi-witness intelligence.</p>
-              </article>
-              <article className="land-feature">
-                <span className="idx">GOV</span>
-                <h3>Government</h3>
-                <p>Provincial buyers for scaled intake and FIR-pipeline partnership.</p>
-              </article>
-            </div>
+            <InstitutionCarousel
+              items={[
+                {
+                  id: 'ngo',
+                  idx: 'NGO',
+                  title: 'NGOs & legal aid',
+                  description: 'Dashboard seats for review, flags, and referrals — the launch buyer.',
+                },
+                {
+                  id: 'firm',
+                  idx: 'FIRM',
+                  title: 'Law firms',
+                  description: 'Case prep — structured §161 records and multi-witness intelligence.',
+                },
+                {
+                  id: 'gov',
+                  idx: 'GOV',
+                  title: 'Government',
+                  description: 'Provincial buyers for scaled intake and FIR-pipeline partnership.',
+                },
+              ]}
+            />
           </Reveal>
 
           <Reveal delay={0.12}>
