@@ -59,22 +59,28 @@ export function InstitutionCarousel({ items }: { items: InstitutionItem[] }) {
               aria-pressed={isActive}
             >
               <div className="inst-visual">
-                <span className="inst-idx">{item.idx}</span>
-              </div>
-              <div className="inst-progress-track">
-                {isActive && !reduce && (
-                  <span
-                    key={`${item.id}-${cycle}`}
-                    className="inst-progress-fill"
-                    style={{ animationDuration: `${INTERVAL}ms` }}
-                  />
-                )}
-                {isActive && reduce && <span className="inst-progress-fill" style={{ width: '100%' }} />}
-              </div>
-              <div className="inst-caption">
-                <h3>{item.title}</h3>
-                <div className="inst-caption-body">
-                  <p className="inst-caption-desc">{item.description}</p>
+                <div className="inst-visual-main">
+                  <span className="inst-idx">{item.idx}</span>
+                </div>
+                <div className="inst-visual-foot">
+                  <div className="inst-visual-foot-inner">
+                    <div className="inst-progress-track">
+                      {isActive && !reduce && (
+                        <span
+                          key={`${item.id}-${cycle}`}
+                          className="inst-progress-fill"
+                          style={{ animationDuration: `${INTERVAL}ms` }}
+                        />
+                      )}
+                      {isActive && reduce && (
+                        <span className="inst-progress-fill" style={{ width: '100%' }} />
+                      )}
+                    </div>
+                    <div className="inst-caption">
+                      <h3>{item.title}</h3>
+                      <p className="inst-caption-desc">{item.description}</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </motion.button>
