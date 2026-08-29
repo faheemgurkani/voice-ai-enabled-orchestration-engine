@@ -2350,7 +2350,7 @@ audio {
   display: grid;
   grid-template-columns: 0.9fr 1.1fr;
   gap: 28px;
-  align-items: start;
+  align-items: stretch;
 }
 .land-sticky-col {
   position: sticky;
@@ -2360,6 +2360,31 @@ audio {
   display: flex;
   flex-direction: column;
   gap: 14px;
+}
+/* Slider in the sticky column should match the card stack's own height,
+   not its own fixed clamp — the two sit side by side and must line up.
+   The slide itself (the bordered bento) has to absorb the extra height,
+   not just center within it, or its own bottom border falls short of
+   (or overshoots) the card stack's bottom edge once the dots row is
+   added below it. */
+.land-sticky-col .hero-slider {
+  height: 100%;
+  min-height: 0;
+  justify-content: flex-start;
+}
+.land-sticky-col .hero-slider > div:first-child {
+  flex: 1;
+  display: flex;
+}
+.land-sticky-col .hero-slider .hero-screenshot {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.land-sticky-col .hero-screenshot-frame {
+  flex: 1;
+  height: auto;
+  aspect-ratio: auto;
 }
 .land-feature-row {
   display: grid;

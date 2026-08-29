@@ -314,10 +314,44 @@ export default function LandingPage() {
           <div className="land-sticky-board">
             <Reveal>
               <div className="land-sticky-col">
-                <div className="land-quote">
-                  <p>For the first time, a witness can go on record without going on record.</p>
-                  <div className="land-quote-meta">// Pitch line · Anonymous witness</div>
-                </div>
+                <HeroSlider
+                  slides={[
+                    {
+                      id: 'shot-statement-queue',
+                      label: 'PREVIEW · STATEMENT QUEUE',
+                      content: (
+                        <HeroScreenshotSlide
+                          src="/demo/statement-queue.png"
+                          label="PREVIEW · STATEMENT QUEUE"
+                          alt="Statement queue with masked caller identity, reference codes, and urgency flags"
+                        />
+                      ),
+                    },
+                    {
+                      id: 'shot-statement-anon-detail',
+                      label: 'PREVIEW · ANONYMOUS STATEMENT',
+                      content: (
+                        <HeroScreenshotSlide
+                          src="/demo/statement-anon-detail.png"
+                          label="PREVIEW · ANONYMOUS STATEMENT"
+                          alt="Reference-coded statement detail — structured §161 fields, no witness name or phone number"
+                        />
+                      ),
+                    },
+                    {
+                      id: 'shot-field-corroboration',
+                      label: 'PREVIEW · CORROBORATION',
+                      content: (
+                        <HeroScreenshotSlide
+                          src="/demo/field-corroboration.png"
+                          label="PREVIEW · CORROBORATION"
+                          alt="Field-level corroboration across anonymous witnesses, linked only by reference code"
+                        />
+                      ),
+                    },
+                  ]}
+                  interval={5200}
+                />
               </div>
             </Reveal>
             <Reveal delay={0.1}>
