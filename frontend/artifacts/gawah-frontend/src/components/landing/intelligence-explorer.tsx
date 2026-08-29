@@ -32,10 +32,22 @@ export function IntelligenceExplorer({
     ? Math.max(measuredHeight, MIN_BOARD_HEIGHT)
     : MIN_BOARD_HEIGHT;
 
+  useEffect(() => {
+    if (reduce || items.length <= 1) return;
+    const id = window.setInterval(() => {
+      setActive((i) => (i + 1) % items.length);
+    }, interval);
+    return () => window.clearInterval(id);
+  }, [reduce, items.length, interval]);
+
   return (
     <div className="intel-board">
       <LayoutGroup id="intel-accordion">
-        <div className="intel-list" ref={listRef} style={{ minHeight: MIN_BOARD_HEIGHT }}>
+        <div
+          className="intel-list"
+          ref={listRef}
+          style={{ height: boardHeight, minHeight: MIN_BOARD_HEIGHT }}
+        >
           {items.map((item, i) => {
             const isActive = i === active;
             return (

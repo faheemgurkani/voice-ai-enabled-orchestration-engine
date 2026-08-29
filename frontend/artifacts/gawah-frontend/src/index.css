@@ -2525,7 +2525,7 @@ audio {
   display: grid;
   grid-template-columns: 0.88fr 1.12fr;
   gap: clamp(20px, 3vw, 32px);
-  align-items: start;
+  align-items: stretch;
 }
 .intel-list {
   display: flex;
@@ -2603,16 +2603,25 @@ audio {
 }
 .intel-visual {
   width: 100%;
-  min-height: clamp(560px, 58vh, 680px);
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 .intel-visual-stack {
   display: grid;
   grid-template: 1fr / 1fr;
   width: 100%;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
 }
 .intel-visual-layer {
   grid-area: 1 / 1;
   width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
   pointer-events: none;
 }
 .intel-visual-layer.is-active {
@@ -2620,17 +2629,31 @@ audio {
 }
 .intel-visual > div {
   width: 100%;
+  height: 100%;
 }
 .intel-visual .hero-screenshot {
   width: 100%;
+  height: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 .intel-visual .hero-screenshot-frame {
   width: 100%;
-  aspect-ratio: 1.85 / 1;
-  min-height: clamp(320px, 34vw, 420px);
-  flex: none;
+  flex: 1 1 auto;
+  min-height: 0;
   height: auto;
+  aspect-ratio: auto;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.intel-visual .hero-screenshot-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 .hero-screenshot-placeholder {
   display: flex;
@@ -2656,10 +2679,9 @@ audio {
 }
 @media (max-width: 980px) {
   .intel-board { grid-template-columns: 1fr; }
-  .intel-list { height: auto !important; min-height: 0 !important; }
+  .intel-list { min-height: 0 !important; }
   .intel-item.is-active { flex: 0 0 auto; overflow-y: visible; }
-  .intel-visual { min-height: 0; margin-top: 4px; }
-  .intel-visual .hero-screenshot-frame { min-height: clamp(220px, 50vw, 320px); }
+  .intel-visual { height: auto !important; min-height: clamp(320px, 70vw, 480px); }
 }
 /* The slide card's height is pinned (in px, via JS) to the card stack's own
    height by HeroSlider's cardHeight prop — applied to the crossfade wrapper
