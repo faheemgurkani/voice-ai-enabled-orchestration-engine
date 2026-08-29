@@ -64,23 +64,23 @@ export function InstitutionCarousel({ items }: { items: InstitutionItem[] }) {
                 </div>
                 <div className="inst-visual-foot">
                   <div className="inst-visual-foot-inner">
-                    <div className="inst-progress-track">
-                      {isActive && !reduce && (
-                        <span
-                          key={`${item.id}-${cycle}`}
-                          className="inst-progress-fill"
-                          style={{ animationDuration: `${INTERVAL}ms` }}
-                        />
-                      )}
-                      {isActive && reduce && (
-                        <span className="inst-progress-fill" style={{ width: '100%' }} />
-                      )}
-                    </div>
                     <div className="inst-caption">
                       <h3>{item.title}</h3>
                       <p className="inst-caption-desc">{item.description}</p>
                     </div>
                   </div>
+                </div>
+                <div className="inst-progress-track">
+                  {isActive && !reduce && (
+                    <span
+                      key={`${item.id}-${cycle}`}
+                      className="inst-progress-fill"
+                      style={{ animationDuration: `${INTERVAL}ms` }}
+                    />
+                  )}
+                  {isActive && reduce && (
+                    <span className="inst-progress-fill" style={{ width: '100%' }} />
+                  )}
                 </div>
               </div>
             </motion.button>

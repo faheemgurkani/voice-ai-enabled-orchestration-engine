@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useState } from 'react';
 import { Link, useLocation } from 'wouter';
 import { fetchHealth } from '@/lib/api';
+import { SiteFooter } from '@/components/layout/site-footer';
 
 const NAV = [
   { href: '/dashboard', label: 'Dashboard', match: '/dashboard' },
@@ -111,13 +112,7 @@ export function PageShell({ children }: { children: ReactNode }) {
         </div>
       )}
       <main className="page-main">{children}</main>
-      <footer className="footer-bar">
-        <div>
-          <span className="accent-sq" />
-          GAWAH — گواہ · VOICE-FIRST LEGAL AI · PAKISTAN
-        </div>
-        <div className="right">UPLIFT AI HACKATHON 2026</div>
-      </footer>
+      <SiteFooter healthy={!healthError} />
     </div>
   );
 }

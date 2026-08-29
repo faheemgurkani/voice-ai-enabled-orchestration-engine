@@ -448,9 +448,9 @@ export default function LandingPage() {
                     'Not a credibility verdict; not court corroboration',
                   ],
                   shot: {
-                    src: '/demo/calls-pipeline.png',
                     label: 'PREVIEW · VOICE SIGNALS',
-                    alt: 'Call pipeline with session activity and sync status',
+                    alt: 'Voice signal analysis UI — in development',
+                    inDevelopment: true,
                   },
                 },
                 {
@@ -464,25 +464,9 @@ export default function LandingPage() {
                     'Transcript control end-to-end — beyond single-call intake',
                   ],
                   shot: {
-                    src: '/demo/statement-detail.png',
                     label: 'PREVIEW · DEPOSITION',
-                    alt: 'Statement detail with structured fields and audio playback',
-                  },
-                },
-                {
-                  id: 'mobile',
-                  dot: 'dot-k',
-                  title: 'MOBILE · NATIVE APPS',
-                  description:
-                    'iPhone and Android intake, alongside the phone-first PSTN core.',
-                  bullets: [
-                    'Native iPhone and Android intake channels',
-                    'Alongside the phone-first PSTN core — not a replacement',
-                  ],
-                  shot: {
-                    src: '/demo/dashboard.png',
-                    label: 'PREVIEW · MOBILE INTAKE',
-                    alt: 'Dashboard overview with statement queue and KPI tiles',
+                    alt: 'Deposition management UI — in development',
+                    inDevelopment: true,
                   },
                 },
               ]}

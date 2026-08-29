@@ -9,10 +9,11 @@ export type IntelligenceItem = {
   title: string;
   description: string;
   bullets: string[];
-  shot: { src: string; label: string; alt: string };
+  shot: { src?: string; label: string; alt: string; inDevelopment?: boolean };
 };
 
 const layoutEase = [0.4, 0, 0.2, 1] as const;
+const MIN_BOARD_HEIGHT = 560;
 
 /** Auto-cycling accordion (left) + crossfading screenshot (right) —
     left column height matches the preview; the active pillar always
@@ -36,12 +37,14 @@ export function IntelligenceExplorer({
     return () => window.clearInterval(id);
   }, [reduce, items.length, interval]);
 
+  const listHeight = boardHeight ? Math.max(boardHeight, MIN_BOARD_HEIGHT) : undefined;
+
   return (
     <div className="intel-board">
       <LayoutGroup id="intel-accordion">
         <div
           className="intel-list"
-          style={boardHeight ? { height: boardHeight } : undefined}
+          style={listHeight ? { height: listHeight } : { minHeight: MIN_BOARD_HEIGHT }}
         >
           {items.map((item, i) => {
             const isActive = i === active;
@@ -92,7 +95,12 @@ export function IntelligenceExplorer({
               style={{ zIndex: i === active ? 1 : 0 }}
               aria-hidden={i !== active}
             >
-              <HeroScreenshotSlide src={item.shot.src} label={item.shot.label} alt={item.shot.alt} />
+              <HeroScreenshotSlide
+                src={item.shot.src}
+                label={item.shot.label}
+                alt={item.shot.alt}
+                inDevelopment={item.shot.inDevelopment}
+              />
             </motion.div>
           ))}
         </div>
