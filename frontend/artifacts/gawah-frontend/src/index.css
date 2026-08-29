@@ -2331,6 +2331,12 @@ audio {
 .land-sticky-col {
   position: sticky;
   top: 88px;
+  /* A grid item's default min-height is its content's min-content size —
+     for an image that's its natural (often large) rendered height, which
+     was inflating the whole row past the right column's real height.
+     min-height: 0 lets it shrink to (and thus follow) that row height
+     instead of dictating it. */
+  min-height: 0;
 }
 .land-card-stack {
   display: flex;
@@ -2391,20 +2397,25 @@ audio {
 .intel-visual {
   display: flex;
   flex-direction: column;
+  min-height: 0;
 }
 .intel-visual > div {
   flex: 1;
   display: flex;
+  min-height: 0;
 }
 .intel-visual .hero-screenshot {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-height: 0;
 }
 .intel-visual .hero-screenshot-frame {
   flex: 1;
   height: auto;
+  min-height: 0;
   aspect-ratio: auto;
+  overflow: hidden;
 }
 @media (max-width: 980px) {
   .intel-board { grid-template-columns: 1fr; }
@@ -2423,16 +2434,20 @@ audio {
 .land-sticky-col .hero-slider > div:first-child {
   flex: 1;
   display: flex;
+  min-height: 0;
 }
 .land-sticky-col .hero-slider .hero-screenshot {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-height: 0;
 }
 .land-sticky-col .hero-screenshot-frame {
   flex: 1;
   height: auto;
+  min-height: 0;
   aspect-ratio: auto;
+  overflow: hidden;
 }
 .land-feature {
   border: 2px solid var(--e-fg);

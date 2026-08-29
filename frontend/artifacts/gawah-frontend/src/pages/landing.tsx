@@ -315,9 +315,8 @@ export default function LandingPage() {
           </Reveal>
 
           <div className="land-sticky-board">
-            <Reveal>
-              <div className="land-sticky-col">
-                <HeroSlider
+            <Reveal className="land-sticky-col">
+              <HeroSlider
                   slides={[
                     {
                       id: 'shot-statement-queue',
