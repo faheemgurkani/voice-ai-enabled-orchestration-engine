@@ -135,3 +135,98 @@ export function GbvMiniBars() {
     </div>
   );
 }
+
+/** Same GBV case-type data as the bars, drawn as a connected line — an
+    honest second view of one real dataset, not a fabricated time trend. */
+export function GbvTrendLine() {
+  const ref = useRef<SVGSVGElement>(null);
+  const inView = useInView(ref, { once: true, margin: '-10% 0px -10% 0px' });
+  const reduce = useReducedMotion();
+  const [on, setOn] = useState(false);
+
+  useEffect(() => {
+    if (!inView && !reduce) return;
+    const id = requestAnimationFrame(() => setOn(true));
+    return () => cancelAnimationFrame(id);
+  }, [inView, reduce]);
+
+  const points = [
+    { label: 'Kidnapping', value: 24439 },
+    { label: 'Rape', value: 5339 },
+    { label: 'Domestic v.', value: 2238 },
+    { label: 'Honour k.', value: 547 },
+  ];
+  const max = points[0].value;
+  const w = 300;
+  const h = 130;
+  const padTop = 22;
+  const plotH = h - padTop;
+  const step = w / (points.length - 1);
+  const coords = points.map((p, i) => ({
+    x: i * step,
+    y: padTop + (plotH - (p.value / max) * plotH),
+  }));
+  const linePath = coords.map((c, i) => `${i === 0 ? 'M' : 'L'}${c.x},${c.y}`).join(' ');
+  const areaPath = `${linePath} L${w},${h} L0,${h} Z`;
+  const pathLength = 500;
+  const dashProps = {
+    strokeDasharray: pathLength,
+    strokeDashoffset: reduce || on ? 0 : pathLength,
+  };
+
+  return (
+    <div className="pw-trend">
+      <svg
+        ref={ref}
+        viewBox={`0 0 ${w} ${h}`}
+        preserveAspectRatio="none"
+        className="pw-trend-svg"
+        aria-hidden
+      >
+        <defs>
+          <linearGradient id="pw-trend-fill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--e-accent)" stopOpacity="0.32" />
+            <stop offset="100%" stopColor="var(--e-accent)" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        <path
+          d={areaPath}
+          fill="url(#pw-trend-fill)"
+          stroke="none"
+          style={{ opacity: reduce || on ? 1 : 0, transition: 'opacity 700ms 300ms var(--e-ease)' }}
+        />
+        <path
+          d={linePath}
+          fill="none"
+          stroke="var(--e-accent)"
+          strokeWidth="3"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          pathLength={pathLength}
+          style={{ ...dashProps, transition: 'stroke-dashoffset 900ms var(--e-ease)' }}
+        />
+        {coords.map((c, i) => (
+          <g key={i}>
+            <circle cx={c.x} cy={c.y} r="4.5" fill="var(--e-bg)" stroke="var(--e-accent)" strokeWidth="2" />
+            <text
+              x={c.x}
+              y={c.y - 10}
+              textAnchor={i === 0 ? 'start' : i === points.length - 1 ? 'end' : 'middle'}
+              fontSize="11"
+              fontFamily="'JetBrains Mono', monospace"
+              fontWeight={700}
+              fill="var(--e-fg)"
+            >
+              {points[i].value.toLocaleString()}
+            </text>
+          </g>
+        ))}
+      </svg>
+      <div className="pw-trend-labels">
+        {points.map((p) => (
+          <span key={p.label}>{p.label}</span>
+        ))}
+      </div>
+    </div>
+  );
+}

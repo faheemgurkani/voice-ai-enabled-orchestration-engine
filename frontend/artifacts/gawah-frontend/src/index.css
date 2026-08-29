@@ -2005,9 +2005,10 @@ audio {
 }
 
 /* ── Problem section bento grid ─────────────────────────────────────── */
-/* One-view bento — 3 small cells, then one big tile (spans 2 cols) + one
-   small tile sharing the second row. Matches the reference: bars/plots
-   live only in the big tile; everything else is compact stats/text. */
+/* One-view bento — row 1: three small stat cells. Rows 2-3: one big tile
+   (spans both cols 1-2 and both rows — bars + line graph live here) beside
+   two more small tiles stacked in column 3 below the row-1 conviction
+   tile: Conviction → Support.Coverage → Acquittal.Rate. */
 .problem-bento {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -2015,20 +2016,23 @@ audio {
 }
 .problem-bento .bento { height: 100%; display: flex; flex-direction: column; }
 .problem-bento .bento-body { display: flex; flex-direction: column; gap: 12px; flex: 1; }
+/* Spans cols 1-2 only, leaving column 3 open in the same row for
+   Support.Coverage to auto-place into — no leftover empty row. */
 .problem-tile--big { grid-column: span 2; }
-/* Right column of row 2 — split top/bottom into two stacked tiles,
-   stretched by the grid to match the wide tile's height. */
-.problem-tile--split {
-  grid-column: 3;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-.problem-tile--split > div { flex: 1; min-height: 0; }
-.problem-tile--center .bento-body {
-  justify-content: center;
+
+/* Line graph (left) beside the bar chart (right), inside the merged card */
+.pw-charts {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 0;
   align-items: center;
-  text-align: center;
+}
+.pw-charts > :first-child {
+  border-right: 2px solid var(--e-fg);
+  padding-right: 28px;
+}
+.pw-charts > :last-child {
+  padding-left: 28px;
 }
 
 /* Lead number inside stat tiles */
@@ -2037,6 +2041,10 @@ audio {
   font-size: clamp(36px, 4.5vw, 50px);
   line-height: 0.9;
   color: var(--e-accent);
+}
+.pw-dual-num {
+  display: flex;
+  gap: 28px;
 }
 .pw-source {
   margin-top: auto;
@@ -2079,6 +2087,16 @@ audio {
   font-weight: 700;
   text-align: right;
   min-width: 46px;
+}
+
+/* Line graph — same GBV dataset as the bars, drawn as a connected line */
+.pw-trend { display: flex; flex-direction: column; gap: 6px; }
+.pw-trend-svg { width: 100%; height: 130px; display: block; overflow: visible; }
+.pw-trend-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--e-muted);
 }
 
 /* Compact annotation list under a top-card stat/bar */
@@ -2207,74 +2225,17 @@ audio {
   line-height: 1;
 }
 
-/* Mission / pipeline timeline — full-width row beneath the 3-card grid */
-.pw-timeline {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  position: relative;
-  padding-top: 4px;
-}
-.pw-timeline::before {
-  content: '';
-  position: absolute;
-  top: 13px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: color-mix(in srgb, var(--e-fg) 22%, transparent);
-}
-.pw-timeline-step { position: relative; padding-top: 32px; }
-.pw-timeline-dot {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 22px;
-  height: 22px;
-  border: 2px solid var(--e-fg);
-  background: var(--e-bg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'VT323', monospace;
-  font-size: 13px;
-  z-index: 1;
-}
-.pw-timeline-step.is-active .pw-timeline-dot {
-  background: var(--e-accent);
-  border-color: var(--e-accent);
-  color: #fff;
-}
-.pw-timeline-label {
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  font-weight: 700;
-  margin-bottom: 6px;
-}
-.pw-timeline-copy {
-  font-size: 12px;
-  color: var(--e-muted);
-  line-height: 1.5;
-}
 @media (max-width: 980px) {
   .problem-bento { grid-template-columns: 1fr; }
   .problem-tile--big { grid-column: span 1; }
-  .problem-tile--split { grid-column: 1; }
-  .pw-timeline {
-    grid-template-columns: 1fr;
-    gap: 22px;
+  .pw-charts { grid-template-columns: 1fr; gap: 24px; }
+  .pw-charts > :first-child {
+    border-right: none;
+    border-bottom: 2px solid var(--e-fg);
+    padding-right: 0;
+    padding-bottom: 24px;
   }
-  .pw-timeline::before {
-    top: 0;
-    bottom: 0;
-    left: 10px;
-    right: auto;
-    width: 2px;
-    height: auto;
-  }
-  .pw-timeline-step { padding-top: 0; padding-left: 36px; }
-  .pw-timeline-dot { top: 0; left: 0; }
+  .pw-charts > :last-child { padding-left: 0; }
 }
 
 /* Diptych — one bordered panel, internally divided (used once, for Intelligence) */

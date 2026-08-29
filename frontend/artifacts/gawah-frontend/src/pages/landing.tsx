@@ -5,7 +5,7 @@ import { Reveal } from '@/components/landing/reveal';
 import { ScrambleText } from '@/components/landing/scramble-text';
 import { HeroSlider } from '@/components/landing/hero-slider';
 import { HeroScreenshotSlide } from '@/components/landing/hero-screenshot-slide';
-import { GbvMiniBars } from '@/components/landing/problem-visuals';
+import { GbvMiniBars, GbvTrendLine, SplitStat } from '@/components/landing/problem-visuals';
 
 export default function LandingPage() {
   return (
@@ -167,17 +167,6 @@ export default function LandingPage() {
                       />
                     ),
                   },
-                  {
-                    id: 'shot-voice-demo',
-                    label: 'PREVIEW · VOICE DEMO',
-                    content: (
-                      <HeroScreenshotSlide
-                        src="/demo/voice-demo.png"
-                        label="PREVIEW · VOICE DEMO"
-                        alt="Voice demo page for starting a live web or phone call"
-                      />
-                    ),
-                  },
                 ]}
                 interval={5200}
               />
@@ -212,9 +201,9 @@ export default function LandingPage() {
             </header>
           </Reveal>
 
-          {/* One-view bento — row 1: three anchor stats. Row 2: one wide
-              tile (the intimidation problem + GBV chart) beside a column
-              split top/bottom into two more stats. */}
+          {/* One-view bento — row 1: three anchor stats. Row 2: the
+              intimidation problem block, now full width (bars + line
+              graph). Row 3: support-coverage, pinned under Conviction. */}
           <div className="problem-bento">
             <Reveal delay={0.05}>
               <div className="bento">
@@ -272,38 +261,37 @@ export default function LandingPage() {
               </div>
             </Reveal>
 
-            <Reveal delay={0.15}>
-              <div className="bento problem-tile--big">
+            <Reveal delay={0.15} className="problem-tile--big">
+              <div className="bento">
                 <div className="bento-h">
                   <span className="dot dot-o" />
                   THE WITNESS INTIMIDATION PROBLEM
+                  <span className="bento-name">GBV CASES · 2024</span>
                 </div>
-                <div className="bento-body pw-split-body">
-                  <div>
-                    <p style={{ margin: 0, fontSize: 13, lineHeight: 1.55, color: 'var(--e-fg-soft)' }}>
-                      60% of rapists are acquitted due to insufficient evidence or witness
-                      intimidation.
-                    </p>
-                    <p style={{ margin: '12px 0 0', fontSize: 11, color: 'var(--e-muted)' }}>
-                      32,617 total GBV cases reported in Pakistan, 2024
-                    </p>
-                    <div className="pw-source">Human Rights Watch · SSDO, 2024</div>
+                <div className="bento-body">
+                  <p style={{ margin: 0, fontSize: 12, lineHeight: 1.5, color: 'var(--e-fg-soft)' }}>
+                    60% of rapists are acquitted — insufficient evidence or witness
+                    intimidation (HRW).
+                  </p>
+                  <div className="pw-charts">
+                    <GbvTrendLine />
+                    <GbvMiniBars />
                   </div>
-                  <GbvMiniBars />
+                  <div className="pw-source">SSDO, 2024 · 32,617 total GBV cases</div>
                 </div>
               </div>
             </Reveal>
 
             <Reveal delay={0.18}>
-              <div className="bento problem-tile--tall">
+              <div className="bento">
                 <div className="bento-h">
                   <span className="dot dot-r" />
                   SUPPORT.COVERAGE
                 </div>
-                <div className="bento-body problem-tile--center-body">
-                  <div className="pw-lead-num">12%</div>
-                  <p style={{ margin: 0, fontSize: 12, lineHeight: 1.5, fontWeight: 700 }}>
-                    Population coverage — only 32 rape crisis centers nationwide.
+                <div className="bento-body">
+                  <SplitStat value={12} labelA="Covered" labelB="Uncovered" />
+                  <p style={{ margin: 0, fontSize: 12, lineHeight: 1.5, color: 'var(--e-fg-soft)' }}>
+                    Only 32 rape crisis centers nationwide.
                   </p>
                   <div className="pw-source">UNFPA</div>
                 </div>
