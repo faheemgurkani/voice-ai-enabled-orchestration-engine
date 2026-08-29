@@ -352,9 +352,8 @@ export default function LandingPage() {
                       ),
                     },
                   ]}
-                  interval={5200}
-                />
-              </div>
+                interval={5200}
+              />
             </Reveal>
             <Reveal delay={0.1}>
               <div className="land-card-stack">
