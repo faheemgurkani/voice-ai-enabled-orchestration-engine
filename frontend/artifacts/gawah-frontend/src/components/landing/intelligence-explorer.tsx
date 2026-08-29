@@ -27,25 +27,15 @@ export function IntelligenceExplorer({
 }) {
   const [active, setActive] = useState(0);
   const reduce = useReducedMotion();
-  const { sourceRef: visualRef, height: boardHeight } = useMatchHeight<HTMLDivElement>();
-
-  useEffect(() => {
-    if (reduce || items.length <= 1) return;
-    const id = window.setInterval(() => {
-      setActive((i) => (i + 1) % items.length);
-    }, interval);
-    return () => window.clearInterval(id);
-  }, [reduce, items.length, interval]);
-
-  const listHeight = boardHeight ? Math.max(boardHeight, MIN_BOARD_HEIGHT) : undefined;
+  const { sourceRef: listRef, height: measuredHeight } = useMatchHeight<HTMLDivElement>();
+  const boardHeight = measuredHeight
+    ? Math.max(measuredHeight, MIN_BOARD_HEIGHT)
+    : MIN_BOARD_HEIGHT;
 
   return (
     <div className="intel-board">
       <LayoutGroup id="intel-accordion">
-        <div
-          className="intel-list"
-          style={listHeight ? { height: listHeight } : { minHeight: MIN_BOARD_HEIGHT }}
-        >
+        <div className="intel-list" ref={listRef} style={{ minHeight: MIN_BOARD_HEIGHT }}>
           {items.map((item, i) => {
             const isActive = i === active;
             return (
@@ -84,7 +74,7 @@ export function IntelligenceExplorer({
         </div>
       </LayoutGroup>
 
-      <div className="intel-visual" ref={visualRef}>
+      <div className="intel-visual" style={{ height: boardHeight }}>
         <div className="intel-visual-stack">
           {items.map((item, i) => (
             <motion.div
