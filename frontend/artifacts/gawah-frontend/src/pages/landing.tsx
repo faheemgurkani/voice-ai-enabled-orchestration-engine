@@ -437,6 +437,54 @@ export default function LandingPage() {
                     alt: 'Field-level corroboration table across three linked witness statements, with a collusion warning',
                   },
                 },
+                {
+                  id: 'signal',
+                  dot: 'dot-r',
+                  title: 'SIGNAL · LIE DETECTION',
+                  description:
+                    'Assistive voice-cue analysis for counsel — never a credibility verdict.',
+                  bullets: [
+                    'Voice-cue analysis for counsel prep — assistive only',
+                    'Not a credibility verdict; not court corroboration',
+                  ],
+                  shot: {
+                    src: '/demo/calls-pipeline.png',
+                    label: 'PREVIEW · VOICE SIGNALS',
+                    alt: 'Call pipeline with session activity and sync status',
+                  },
+                },
+                {
+                  id: 'process',
+                  dot: 'dot-o',
+                  title: 'PROCESS · DEPOSITION',
+                  description:
+                    'Scheduling, roles, and transcript control across a full proceeding.',
+                  bullets: [
+                    'Scheduling and role management across a proceeding',
+                    'Transcript control end-to-end — beyond single-call intake',
+                  ],
+                  shot: {
+                    src: '/demo/statement-detail.png',
+                    label: 'PREVIEW · DEPOSITION',
+                    alt: 'Statement detail with structured fields and audio playback',
+                  },
+                },
+                {
+                  id: 'mobile',
+                  dot: 'dot-k',
+                  title: 'MOBILE · NATIVE APPS',
+                  description:
+                    'iPhone and Android intake, alongside the phone-first PSTN core.',
+                  bullets: [
+                    'Native iPhone and Android intake channels',
+                    'Alongside the phone-first PSTN core — not a replacement',
+                  ],
+                  shot: {
+                    src: '/demo/dashboard.png',
+                    label: 'PREVIEW · MOBILE INTAKE',
+                    alt: 'Dashboard overview with statement queue and KPI tiles',
+                  },
+                },
               ]}
             />
           </Reveal>
@@ -595,46 +643,6 @@ export default function LandingPage() {
                 <div className="kv-v">Statement capture stays free</div>
                 <div className="kv-k">Funding</div>
                 <div className="kv-v">Grant-eligible (UN Women, USAID) + firm &amp; gov contracts</div>
-              </div>
-            </div>
-          </Reveal>
-        </section>
-
-        {/* ── Future ── */}
-        <section id="future" className="land-chapter">
-          <Reveal>
-            <header className="land-chapter-head">
-              <h2 className="land-chapter-title">
-                FUTURE.<span className="accent">WORK</span>
-              </h2>
-              <p className="land-chapter-sub">Beyond the PSTN MVP — not shipped claims.</p>
-            </header>
-          </Reveal>
-
-          <Reveal delay={0.08}>
-            <div className="bento">
-              <div className="bento-body land-roadmap">
-                <div className="land-roadmap-row">
-                  <span className="land-roadmap-tag">SIGNAL</span>
-                  <p className="land-roadmap-copy">
-                    <strong>Lie detection.</strong> Assistive voice-cue analysis for counsel — never
-                    a credibility verdict.
-                  </p>
-                </div>
-                <div className="land-roadmap-row">
-                  <span className="land-roadmap-tag">PROCESS</span>
-                  <p className="land-roadmap-copy">
-                    <strong>Deposition management.</strong> Scheduling, roles, and transcript
-                    control across a full proceeding.
-                  </p>
-                </div>
-                <div className="land-roadmap-row">
-                  <span className="land-roadmap-tag">MOBILE</span>
-                  <p className="land-roadmap-copy">
-                    <strong>Native phone apps.</strong> iPhone and Android intake, alongside the
-                    phone-first PSTN core.
-                  </p>
-                </div>
               </div>
             </div>
           </Reveal>
