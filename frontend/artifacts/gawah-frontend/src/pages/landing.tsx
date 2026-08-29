@@ -631,30 +631,6 @@ export default function LandingPage() {
             </div>
           </Reveal>
         </section>
-
-        {/* ── Close ── */}
-        <section id="close" className="land-close">
-          <div className="land-chapter">
-            <Reveal>
-              <header className="land-chapter-head">
-                <h2 className="land-chapter-title">
-                  THE ANONYMOUS.<span className="accent">WITNESS</span>
-                </h2>
-                <p className="land-chapter-sub">
-                  Built for NGOs, law firms, legal aid, and government.
-                </p>
-              </header>
-            </Reveal>
-
-            <Reveal delay={0.1}>
-              <ul className="e-bullets" style={{ marginTop: 36, maxWidth: 920 }}>
-                <li>Voice statement in Urdu / Punjabi — no literacy required</li>
-                <li>Anonymous by default — linked to a reference code, not a phone number</li>
-                <li>Immutable timestamped record — the lost-report failure mode ends here</li>
-              </ul>
-            </Reveal>
-          </div>
-        </section>
       </div>
     </PageShell>
   );

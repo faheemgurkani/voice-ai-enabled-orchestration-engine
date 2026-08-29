@@ -2907,51 +2907,6 @@ audio {
 @media (max-width: 640px) {
   .carousel-track { grid-auto-columns: 85%; }
 }
-.land-close {
-  background: var(--e-fg);
-  color: var(--e-bg);
-  border-top: 2px solid var(--e-fg);
-}
-.land-close .land-chapter {
-  max-width: 1400px;
-}
-.land-close .land-chapter-title .accent {
-  color: var(--e-accent);
-}
-.land-close .land-chapter-title { color: var(--e-bg); }
-.land-close .land-chapter-sub { color: color-mix(in srgb, var(--e-bg) 70%, transparent); }
-.land-close .bento {
-  background: transparent;
-  border-color: color-mix(in srgb, var(--e-bg) 35%, transparent);
-  color: var(--e-bg);
-}
-.land-close .bento-h {
-  background: transparent;
-  border-bottom-color: color-mix(in srgb, var(--e-bg) 35%, transparent);
-  color: var(--e-bg);
-}
-.land-close .kv-k { color: color-mix(in srgb, var(--e-bg) 55%, transparent); }
-.land-close .kv-v { color: var(--e-bg); }
-.land-close .e-bullets li {
-  background: transparent;
-  border-color: color-mix(in srgb, var(--e-bg) 40%, transparent);
-  color: var(--e-bg);
-}
-.land-close .e-bullets li:hover {
-  background: color-mix(in srgb, var(--e-bg) 8%, transparent);
-  box-shadow: 2px 2px 0 var(--e-accent);
-}
-.land-close .cta-ghost .cta-lbl {
-  background: transparent;
-  color: var(--e-bg);
-  border-left: 0;
-}
-.land-close .cta-btn {
-  border-color: var(--e-bg);
-}
-.land-close .cta-btn:hover:not(:disabled) {
-  box-shadow: 4px 4px 0 var(--e-accent);
-}
 @media (max-width: 980px) {
   .land-hero-inner,
   .land-split,
