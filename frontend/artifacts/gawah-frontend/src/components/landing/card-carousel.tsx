@@ -35,9 +35,6 @@ export function CardCarousel({ children }: { children: ReactNode }) {
 
   return (
     <div className="carousel">
-      <div className="carousel-track" ref={trackRef}>
-        {children}
-      </div>
       <div className="carousel-nav">
         <button
           type="button"
@@ -57,6 +54,9 @@ export function CardCarousel({ children }: { children: ReactNode }) {
         >
           →
         </button>
+      </div>
+      <div className="carousel-track" ref={trackRef}>
+        {children}
       </div>
     </div>
   );
