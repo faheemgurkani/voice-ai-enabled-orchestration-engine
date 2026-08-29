@@ -562,19 +562,19 @@ export default function LandingPage() {
               items={[
                 {
                   id: 'ngo',
-                  idx: 'NGO',
+                  idx: '.ngo',
                   title: 'NGOs & legal aid',
                   description: 'Dashboard seats for review, flags, and referrals — the launch buyer.',
                 },
                 {
                   id: 'firm',
-                  idx: 'FIRM',
+                  idx: '.firm',
                   title: 'Law firms',
                   description: 'Case prep — structured §161 records and multi-witness intelligence.',
                 },
                 {
                   id: 'gov',
-                  idx: 'GOV',
+                  idx: '.gov',
                   title: 'Government',
                   description: 'Provincial buyers for scaled intake and FIR-pipeline partnership.',
                 },

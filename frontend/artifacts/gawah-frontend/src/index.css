@@ -2376,7 +2376,8 @@ audio {
   min-height: 0;
   transition:
     box-shadow var(--e-hover) var(--e-ease),
-    border-color var(--e-hover) var(--e-ease);
+    border-color var(--e-hover) var(--e-ease),
+    opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .intel-item:not(.is-active) {
   opacity: 0.88;
@@ -2416,9 +2417,26 @@ audio {
   min-height: 0;
 }
 .intel-item-body p { margin: 0; }
+.intel-item-body .e-bullets {
+  margin-top: auto;
+  padding-top: 14px;
+}
 .intel-visual {
   width: 100%;
   min-height: 0;
+}
+.intel-visual-stack {
+  display: grid;
+  grid-template: 1fr / 1fr;
+  width: 100%;
+}
+.intel-visual-layer {
+  grid-area: 1 / 1;
+  width: 100%;
+  pointer-events: none;
+}
+.intel-visual-layer.is-active {
+  pointer-events: auto;
 }
 .intel-visual > div {
   width: 100%;
@@ -2496,17 +2514,17 @@ audio {
   color: var(--e-fg-soft);
   flex: 1;
 }
-/* Sold-to-institutions carousel — active buyer card expands with an accent
-   border, its description, and a progress bar; others collapse to a title. */
+/* Sold-to-institutions carousel — active buyer card expands horizontally,
+   compressing siblings; description reveals on the active card only. */
 .inst-row {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  display: flex;
+  align-items: stretch;
   gap: 14px;
 }
 .inst-card {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  min-width: 0;
   text-align: left;
   background: none;
   border: none;
@@ -2514,6 +2532,8 @@ audio {
   font: inherit;
   color: inherit;
   cursor: pointer;
+  overflow: hidden;
+  will-change: flex;
 }
 .inst-visual {
   border: 2px solid var(--e-fg);
@@ -2522,7 +2542,10 @@ audio {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: border-color var(--e-hover) var(--e-ease), box-shadow var(--e-hover) var(--e-ease);
+  overflow: hidden;
+  transition:
+    border-color 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.45s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .inst-card:hover .inst-visual {
   box-shadow: 4px 4px 0 var(--e-fg);
@@ -2536,7 +2559,8 @@ audio {
   font-size: clamp(44px, 6vw, 72px);
   letter-spacing: 0.06em;
   color: color-mix(in srgb, var(--e-fg) 22%, transparent);
-  transition: color var(--e-hover) var(--e-ease);
+  white-space: nowrap;
+  transition: color 0.45s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .inst-card.is-active .inst-idx {
   color: color-mix(in srgb, var(--e-accent) 60%, transparent);
@@ -2546,6 +2570,7 @@ audio {
   background: var(--e-bg-2);
   margin-top: 10px;
   overflow: hidden;
+  flex-shrink: 0;
 }
 .inst-progress-fill {
   display: block;
@@ -2563,6 +2588,7 @@ audio {
 }
 .inst-caption {
   padding-top: 12px;
+  min-width: 0;
 }
 .inst-caption h3 {
   margin: 0;
@@ -2570,19 +2596,29 @@ audio {
   letter-spacing: 0.16em;
   text-transform: uppercase;
   font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.inst-caption p {
+.inst-caption-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.42s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.inst-card.is-active .inst-caption-body {
+  grid-template-rows: 1fr;
+}
+.inst-caption-desc {
   margin: 6px 0 0;
   font-size: 13px;
   line-height: 1.6;
   color: var(--e-fg-soft);
-  max-height: 0;
-  opacity: 0;
   overflow: hidden;
-  transition: max-height 0.35s var(--e-ease), opacity 0.3s var(--e-ease);
+  min-height: 0;
+  opacity: 0;
+  transition: opacity 0.32s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.inst-card.is-active .inst-caption p {
-  max-height: 120px;
+.inst-card.is-active .inst-caption-desc {
   opacity: 1;
 }
 
@@ -2688,7 +2724,13 @@ audio {
   .land-roadmap-row {
     grid-template-columns: 1fr;
   }
-  .inst-row { grid-template-columns: 1fr; }
+  .inst-row {
+    flex-direction: column;
+  }
+  .inst-card,
+  .inst-card.is-active {
+    flex: 1 1 auto !important;
+  }
   .land-sticky-col { position: static; height: auto !important; }
 }
 @media (max-width: 768px) {
