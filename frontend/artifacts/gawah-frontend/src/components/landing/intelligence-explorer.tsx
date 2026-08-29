@@ -1,7 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { HeroScreenshotSlide } from '@/components/landing/hero-screenshot-slide';
-import { useMatchHeight } from '@/hooks/use-match-height';
 
 export type IntelligenceItem = {
   id: string;
@@ -12,17 +11,30 @@ export type IntelligenceItem = {
   shot: { src: string; label: string; alt: string };
 };
 
-/** Click-driven accordion (left) + crossfading screenshot (right) —
-    only one pillar expanded at a time, its screenshot swaps to match. */
-export function IntelligenceExplorer({ items }: { items: IntelligenceItem[] }) {
+/** Auto-cycling accordion (left) + crossfading screenshot (right) —
+    one pillar expanded at a time; collapsed tabs stay visible below. */
+export function IntelligenceExplorer({
+  items,
+  interval = 5200,
+}: {
+  items: IntelligenceItem[];
+  interval?: number;
+}) {
   const [active, setActive] = useState(0);
   const reduce = useReducedMotion();
   const current = items[active];
-  const { sourceRef: listRef, height: listHeight } = useMatchHeight<HTMLDivElement>();
+
+  useEffect(() => {
+    if (reduce || items.length <= 1) return;
+    const id = window.setInterval(() => {
+      setActive((i) => (i + 1) % items.length);
+    }, interval);
+    return () => window.clearInterval(id);
+  }, [reduce, items.length, interval]);
 
   return (
     <div className="intel-board">
-      <div className="intel-list" ref={listRef}>
+      <div className="intel-list">
         {items.map((item, i) => {
           const isActive = i === active;
           return (
@@ -61,7 +73,7 @@ export function IntelligenceExplorer({ items }: { items: IntelligenceItem[] }) {
         })}
       </div>
 
-      <div className="intel-visual" style={listHeight ? { height: listHeight } : undefined}>
+      <div className="intel-visual">
         <AnimatePresence mode="wait">
           <motion.div
             key={current.id}
