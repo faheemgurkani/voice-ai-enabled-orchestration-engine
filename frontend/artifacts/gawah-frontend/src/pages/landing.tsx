@@ -1,5 +1,6 @@
 import { Link } from 'wouter';
 import { motion } from 'framer-motion';
+import { useMatchHeight } from '@/hooks/use-match-height';
 import { PageShell } from '@/components/layout/page-shell';
 import { Reveal } from '@/components/landing/reveal';
 import { ScrambleText } from '@/components/landing/scramble-text';
@@ -11,6 +12,8 @@ import { InstitutionCarousel } from '@/components/landing/institution-carousel';
 import { GbvMiniBars, GbvTrendLine, SplitStat } from '@/components/landing/problem-visuals';
 
 export default function LandingPage() {
+  const { sourceRef: cardStackRef, height: cardStackHeight } = useMatchHeight<HTMLDivElement>();
+
   return (
     <PageShell>
       <div className="land">
@@ -317,6 +320,7 @@ export default function LandingPage() {
           <div className="land-sticky-board">
             <Reveal className="land-sticky-col">
               <HeroSlider
+                cardHeight={cardStackHeight}
                   slides={[
                     {
                       id: 'shot-statement-queue',
@@ -356,7 +360,7 @@ export default function LandingPage() {
               />
             </Reveal>
             <Reveal delay={0.1}>
-              <div className="land-card-stack">
+              <div className="land-card-stack" ref={cardStackRef}>
                 <div className="bento">
                   <div className="bento-h">
                     <span className="dot dot-o" />

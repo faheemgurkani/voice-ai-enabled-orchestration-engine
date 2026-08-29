@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { HeroScreenshotSlide } from '@/components/landing/hero-screenshot-slide';
+import { useMatchHeight } from '@/hooks/use-match-height';
 
 export type IntelligenceItem = {
   id: string;
@@ -17,10 +18,11 @@ export function IntelligenceExplorer({ items }: { items: IntelligenceItem[] }) {
   const [active, setActive] = useState(0);
   const reduce = useReducedMotion();
   const current = items[active];
+  const { sourceRef: listRef, height: listHeight } = useMatchHeight<HTMLDivElement>();
 
   return (
     <div className="intel-board">
-      <div className="intel-list">
+      <div className="intel-list" ref={listRef}>
         {items.map((item, i) => {
           const isActive = i === active;
           return (
@@ -59,7 +61,7 @@ export function IntelligenceExplorer({ items }: { items: IntelligenceItem[] }) {
         })}
       </div>
 
-      <div className="intel-visual">
+      <div className="intel-visual" style={listHeight ? { height: listHeight } : undefined}>
         <AnimatePresence mode="wait">
           <motion.div
             key={current.id}

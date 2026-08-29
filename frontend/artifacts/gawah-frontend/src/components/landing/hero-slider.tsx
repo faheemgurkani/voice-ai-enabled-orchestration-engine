@@ -10,10 +10,13 @@ type Slide = {
 type HeroSliderProps = {
   slides: Slide[];
   interval?: number;
+  /** Pins the card itself (not the dots row below it) to this height, so it
+      lines up with a sibling's border instead of the dots eating into it. */
+  cardHeight?: number;
 };
 
 /** Auto-rotating crossfade between the hero's meta card and a product preview. */
-export function HeroSlider({ slides, interval = 4200 }: HeroSliderProps) {
+export function HeroSlider({ slides, interval = 4200, cardHeight }: HeroSliderProps) {
   const [active, setActive] = useState(0);
   const reduce = useReducedMotion();
 
@@ -32,6 +35,7 @@ export function HeroSlider({ slides, interval = 4200 }: HeroSliderProps) {
       <AnimatePresence mode="wait">
         <motion.div
           key={current.id}
+          style={cardHeight ? { height: cardHeight } : undefined}
           initial={reduce ? false : { opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={reduce ? undefined : { opacity: 0, y: -10 }}

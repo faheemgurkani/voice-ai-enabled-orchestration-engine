@@ -2331,6 +2331,7 @@ audio {
 .land-sticky-col {
   position: sticky;
   top: 88px;
+  margin-top: -11px;
   /* A grid item's default min-height is its content's min-content size —
      for an image that's its natural (often large) rendered height, which
      was inflating the whole row past the right column's real height.
@@ -2420,27 +2421,20 @@ audio {
 @media (max-width: 980px) {
   .intel-board { grid-template-columns: 1fr; }
 }
-/* Slider in the sticky column should match the card stack's own height,
-   not its own fixed clamp — the two sit side by side and must line up.
-   The slide itself (the bordered bento) has to absorb the extra height,
-   not just center within it, or its own bottom border falls short of
-   (or overshoots) the card stack's bottom edge once the dots row is
-   added below it. */
-.land-sticky-col .hero-slider {
-  height: 100%;
-  min-height: 0;
-  justify-content: flex-start;
-}
+/* The slide card's height is pinned (in px, via JS) to the card stack's own
+   height by HeroSlider's cardHeight prop — applied to the crossfade wrapper
+   itself, not the whole .hero-slider, so the dots row stays below the card
+   instead of eating into it. Once that wrapper has a definite height,
+   percentage heights inside it resolve properly (no flex/min-content
+   guesswork needed) — the screenshot frame just takes the leftover space
+   under the card's header. */
 .land-sticky-col .hero-slider > div:first-child {
-  flex: 1;
-  display: flex;
-  min-height: 0;
+  width: 100%;
 }
-.land-sticky-col .hero-slider .hero-screenshot {
-  flex: 1;
+.land-sticky-col .hero-screenshot {
+  height: 100%;
   display: flex;
   flex-direction: column;
-  min-height: 0;
 }
 .land-sticky-col .hero-screenshot-frame {
   flex: 1;
@@ -2676,7 +2670,8 @@ audio {
     grid-template-columns: 1fr;
   }
   .inst-row { grid-template-columns: 1fr; }
-  .land-sticky-col { position: static; }
+  .land-sticky-col { position: static; height: auto !important; }
+  .intel-visual { height: auto !important; }
 }
 @media (max-width: 768px) {
   .land-hero-inner,
