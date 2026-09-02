@@ -78,6 +78,17 @@ class Settings(BaseSettings):
     supabase_key: str = ""
     supabase_service_key: str = ""
 
+    # Auth — dashboard/staff identity. Witnesses never authenticate.
+    # Access tokens are ES256, verified against the project JWKS. Never HS256:
+    # a shared secret in this process could mint staff tokens if it ever leaked.
+    supabase_jwt_audience: str = "authenticated"
+    jwks_cache_seconds: int = 600
+    # Local escape hatch so the JSON-store dev loop survives gated routes.
+    # Refuses to engage when app_env is production (see auth.dev_bypass_active).
+    dev_auth_bypass: bool = False
+    dev_user_id: str = "00000000-0000-0000-0000-000000000000"
+    dev_user_email: str = "dev@gawah.local"
+
     # Twilio (optional PSTN bridge)
     twilio_account_sid: str = ""
     twilio_auth_token: str = ""
@@ -118,6 +129,15 @@ class Settings(BaseSettings):
     @property
     def supabase_anon_or_service_key(self) -> str:
         return self.supabase_service_key or self.supabase_key
+
+    @property
+    def jwks_url(self) -> str:
+        return f"{self.supabase_url.rstrip('/')}/auth/v1/.well-known/jwks.json"
+
+    @property
+    def auth_enabled(self) -> bool:
+        """Auth can only be enforced once a Supabase project is configured."""
+        return bool(self.supabase_url)
 
     @property
     def uplift_enabled(self) -> bool:
