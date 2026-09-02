@@ -11,6 +11,9 @@ import { CardCarousel } from '@/components/landing/card-carousel';
 import { InstitutionCarousel } from '@/components/landing/institution-carousel';
 import { GbvMiniBars, GbvTrendLine, SplitStat } from '@/components/landing/problem-visuals';
 
+const HACKATHON_LINK =
+  'https://www.linkedin.com/posts/hamzama_uplift-ai-x-replit-voice-ai-hackathon-8th-aug-ugcPost-7493406120250654721-gsyb/';
+
 export default function LandingPage() {
   const { sourceRef: cardStackRef, height: cardStackHeight } = useMatchHeight<HTMLDivElement>();
 
@@ -108,7 +111,14 @@ export default function LandingPage() {
                         <div className="hero-meta-grid">
                           <div className="hero-meta-tile">
                             <div className="pw-redact-label">Originated from</div>
-                            <div className="hero-meta-tile-v">UPLIFT AI HACKATHON 2026</div>
+                            <a
+                              className="hero-meta-tile-v"
+                              href={HACKATHON_LINK}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              UPLIFT AI HACKATHON 2026
+                            </a>
                           </div>
                           <div className="hero-meta-tile">
                             <div className="pw-redact-label">Deployment</div>

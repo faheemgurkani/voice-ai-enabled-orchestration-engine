@@ -1107,13 +1107,6 @@ button.call-start-audio[data-lk-enabled='true'],
 .site-footer-links a:hover {
   color: var(--e-accent);
 }
-.site-footer-community {
-  margin: 0;
-  font-size: 13px;
-  line-height: 1.65;
-  color: color-mix(in srgb, var(--e-bg) 62%, transparent);
-  max-width: 220px;
-}
 .site-footer-bottom {
   display: flex;
   align-items: center;
@@ -1123,10 +1116,26 @@ button.call-start-audio[data-lk-enabled='true'],
   border-top: 1px solid color-mix(in srgb, var(--e-bg) 18%, transparent);
   flex-wrap: wrap;
 }
+.site-footer-copy-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
 .site-footer-copy {
   font-size: 12px;
   letter-spacing: 0.06em;
   color: color-mix(in srgb, var(--e-bg) 55%, transparent);
+}
+.site-footer-origin {
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: color-mix(in srgb, var(--e-bg) 55%, transparent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color var(--e-hover) var(--e-ease);
+}
+.site-footer-origin:hover {
+  color: var(--e-accent);
 }
 .site-footer-status {
   display: inline-flex;
@@ -2086,6 +2095,16 @@ audio {
   font-weight: 700;
   letter-spacing: 0.02em;
   line-height: 1.3;
+}
+a.hero-meta-tile-v {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color var(--e-hover) var(--e-ease);
+}
+a.hero-meta-tile-v:hover {
+  color: var(--e-accent);
+  text-decoration: underline;
 }
 .hero-slider-dots {
   display: flex;

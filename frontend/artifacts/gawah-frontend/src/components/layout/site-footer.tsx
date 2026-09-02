@@ -18,6 +18,13 @@ const PLATFORM_LINKS = [
   { href: '/#anonymous', label: 'Anonymous Intake' },
 ] as const;
 
+const HACKATHON_LINK =
+  'https://www.linkedin.com/posts/hamzama_uplift-ai-x-replit-voice-ai-hackathon-8th-aug-ugcPost-7493406120250654721-gsyb/';
+
+const CONTACT_LINK = 'https://eregiontechnologies.com/contact#contact-form';
+
+const COMPANY_LINK = 'https://eregiontechnologies.com/';
+
 export function SiteFooter({ healthy }: SiteFooterProps) {
   return (
     <footer className="site-footer">
@@ -29,14 +36,15 @@ export function SiteFooter({ healthy }: SiteFooterProps) {
             built for NGOs, firms, and government.
           </p>
           <div className="site-footer-cta-actions">
-            <Link href="/demo" className="cta-btn">
+            <a
+              href={CONTACT_LINK}
+              target="_blank"
+              rel="noreferrer"
+              className="cta-btn"
+            >
               <span className="cta-sq">▣</span>
-              <span className="cta-lbl">Start Demo</span>
-            </Link>
-            <Link href="/dashboard" className="cta-btn cta-ghost">
-              <span className="cta-sq">→</span>
-              <span className="cta-lbl">Open Dashboard</span>
-            </Link>
+              <span className="cta-lbl">Get in Touch</span>
+            </a>
           </div>
         </div>
 
@@ -75,13 +83,30 @@ export function SiteFooter({ healthy }: SiteFooterProps) {
           </div>
 
           <div className="site-footer-col">
-            <h3 className="site-footer-col-h">Community</h3>
-            <p className="site-footer-community">Uplift AI × Replit Voice AI Hackathon 2026</p>
+            <h3 className="site-footer-col-h">Company</h3>
+            <a
+              className="site-footer-origin"
+              href={COMPANY_LINK}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Eregion Technologies
+            </a>
           </div>
         </div>
 
         <div className="site-footer-bottom">
-          <span className="site-footer-copy">© 2026 Gawah. All rights reserved.</span>
+          <div className="site-footer-copy-group">
+            <span className="site-footer-copy">© 2026 Gawah. All rights reserved.</span>
+            <a
+              className="site-footer-origin"
+              href={HACKATHON_LINK}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Originated from Uplift AI × Replit Voice AI Hackathon 2026
+            </a>
+          </div>
           <span className={`site-footer-status ${healthy ? 'is-ok' : 'is-down'}`}>
             <span className="site-footer-status-dot" aria-hidden />
             {healthy ? 'All systems normal' : 'Backend offline'}
