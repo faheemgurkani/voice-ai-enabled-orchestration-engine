@@ -110,6 +110,23 @@ class Settings(BaseSettings):
             return value.strip().lower() in {"1", "true", "yes", "on"}
         return bool(value)
 
+    @field_validator("local_db_path", mode="before")
+    @classmethod
+    def default_db_path(cls, value: object) -> str:
+        # A blank env var must mean "unset", not "use the empty string". Vercel
+        # exports declared-but-empty variables, and an empty path made the app
+        # try to mkdir('') on a read-only filesystem, killing startup.
+        if not isinstance(value, str) or not value.strip():
+            return _DEFAULT_LOCAL_DB
+        return value.strip()
+
+    @field_validator("local_audio_dir", mode="before")
+    @classmethod
+    def default_audio_dir(cls, value: object) -> str:
+        if not isinstance(value, str) or not value.strip():
+            return _DEFAULT_LOCAL_AUDIO
+        return value.strip()
+
     @property
     def cors_origin_list(self) -> List[str]:
         origins = [o.strip() for o in self.cors_origins.split(",") if o.strip()]
