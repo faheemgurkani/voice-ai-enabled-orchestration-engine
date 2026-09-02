@@ -10,6 +10,7 @@ from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Reques
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
+from app.auth import get_current_user
 from app.config import get_settings
 from app.db.database import Database, get_db
 from app.services.call_tracker import (
@@ -433,7 +434,7 @@ async def complete_web_session(
     return {"ok": True, "item": updated, "statement": statement_result}
 
 
-@router.get("/activity")
+@router.get("/activity", dependencies=[Depends(get_current_user)])
 async def live_activity(
     limit: int = Query(40, ge=1, le=200),
     db: Database = Depends(get_db),
@@ -580,7 +581,7 @@ async def place_phone_call(
     }
 
 
-@router.get("/calls")
+@router.get("/calls", dependencies=[Depends(get_current_user)])
 async def list_phone_calls(
     limit: int = Query(25, ge=1, le=100),
     sync: bool = Query(True, description="Refresh status + artifacts from Uplift"),
@@ -719,7 +720,9 @@ async def list_phone_calls(
     }
 
 
-@router.post("/calls/{call_id}/process-statement")
+@router.post(
+    "/calls/{call_id}/process-statement", dependencies=[Depends(get_current_user)]
+)
 async def process_call_statement(
     call_id: str,
     force: bool = Query(False, description="Re-run even if already linked"),
@@ -747,7 +750,7 @@ async def process_call_statement(
     return result
 
 
-@router.get("/calls/{call_id}")
+@router.get("/calls/{call_id}", dependencies=[Depends(get_current_user)])
 async def get_phone_call(
     call_id: str,
     uplift: UpliftService = Depends(get_uplift_service),
@@ -783,7 +786,9 @@ async def get_phone_call(
     return {"ok": True, "mocked": False, "item": merged}
 
 
-@router.post("/calls/{call_id}/refresh-artifacts")
+@router.post(
+    "/calls/{call_id}/refresh-artifacts", dependencies=[Depends(get_current_user)]
+)
 async def refresh_call_artifacts(
     call_id: str,
     uplift: UpliftService = Depends(get_uplift_service),

@@ -5,9 +5,16 @@ from typing import Any, Dict, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.db.database import Database, get_db
+from app.auth import get_current_user
 from app.services.kpi_service import compute_kpis
 
-router = APIRouter(prefix="/api/dashboard", tags=["dashboard"])
+# Every route here exposes full statement content, so the whole router is
+# staff-only. Witnesses use /api/statements/{ref_code}, which stays anonymous.
+router = APIRouter(
+    prefix="/api/dashboard",
+    tags=["dashboard"],
+    dependencies=[Depends(get_current_user)],
+)
 
 
 @router.get("/statements")

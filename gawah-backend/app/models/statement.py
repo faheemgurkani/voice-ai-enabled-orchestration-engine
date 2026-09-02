@@ -172,7 +172,10 @@ class StatementListResponse(BaseModel):
 
 class ReviewPayload(BaseModel):
     reviewer_notes: str = ""
-    reviewed_by: str = "reviewer"
+    # Deprecated and ignored: attribution is taken from the verified JWT so a
+    # review cannot be attributed to someone else. Kept only so existing
+    # clients posting this field do not 422.
+    reviewed_by: Optional[str] = None
 
 
 class SaveStatementArgs(BaseModel):
