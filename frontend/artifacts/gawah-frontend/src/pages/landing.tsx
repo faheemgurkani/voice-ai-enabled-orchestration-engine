@@ -107,7 +107,7 @@ export default function LandingPage() {
                         </div>
                         <div className="hero-meta-grid">
                           <div className="hero-meta-tile">
-                            <div className="pw-redact-label">Built for</div>
+                            <div className="pw-redact-label">Originated from</div>
                             <div className="hero-meta-tile-v">UPLIFT AI HACKATHON 2026</div>
                           </div>
                           <div className="hero-meta-tile">
