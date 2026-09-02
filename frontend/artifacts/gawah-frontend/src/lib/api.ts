@@ -2,6 +2,7 @@
 // Backend: FastAPI at VITE_API_URL (default http://localhost:8000)
 // All fetches use cache: 'no-store' for dashboard data.
 
+import { getAccessToken } from '@/lib/supabase';
 import type {
   HealthResponse,
   SessionCreateResponse,
@@ -36,6 +37,17 @@ class ApiError extends Error {
   }
 }
 
+/**
+ * Authorization header for the current staff session, or `{}` when anonymous.
+ *
+ * Witness-facing calls go through the same helper: sending no header is what
+ * keeps them on the anonymous path, so this must never throw or block.
+ */
+async function authHeaders(): Promise<Record<string, string>> {
+  const token = await getAccessToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
 async function gawahFetch<T>(
   path: string,
   options: RequestInit = {},
@@ -46,6 +58,7 @@ async function gawahFetch<T>(
     ...options,
     headers: {
       'Content-Type': 'application/json',
+      ...(await authHeaders()),
       ...(options.headers ?? {}),
     },
   });
@@ -241,7 +254,14 @@ export const uploadWebRecording = async (
   }
 
   const url = `${getBaseUrl()}/api/sessions/web/${encodeURIComponent(callId)}/recording`;
-  const res = await fetch(url, { method: 'POST', body: form, cache: 'no-store' });
+  // No Content-Type here on purpose — the browser must set the multipart
+  // boundary itself.
+  const res = await fetch(url, {
+    method: 'POST',
+    body: form,
+    cache: 'no-store',
+    headers: await authHeaders(),
+  });
   if (!res.ok) {
     let detail = `${res.status} ${res.statusText}`;
     try {
@@ -292,8 +312,21 @@ export const fetchStatements = (
   );
 };
 
+/**
+ * Staff view of a statement. `full=true` is explicit because the backend now
+ * defaults to the limited witness payload — omitting it returns status and
+ * location only, and requesting it without a session returns 401.
+ */
 export const fetchStatement = (refCode: string): Promise<StatementDetail> =>
   gawahFetch<StatementDetail>(
+    `/api/statements/${encodeURIComponent(refCode)}?full=true`,
+  );
+
+/** Anonymous reference-code lookup: status and location, never statement text. */
+export const fetchStatementStatus = (
+  refCode: string,
+): Promise<Partial<StatementDetail>> =>
+  gawahFetch<Partial<StatementDetail>>(
     `/api/statements/${encodeURIComponent(refCode)}`,
   );
 
@@ -313,7 +346,7 @@ export const getStatementAudioUrl = (refCode: string): string =>
 // PDF download — returns a Blob for client-side save
 export const downloadStatementPdf = async (refCode: string): Promise<Blob> => {
   const url = `${getBaseUrl()}/api/statements/${encodeURIComponent(refCode)}/pdf`;
-  const res = await fetch(url, { method: 'POST' });
+  const res = await fetch(url, { method: 'POST', headers: await authHeaders() });
   if (!res.ok) throw new ApiError(res.status, 'PDF generation failed');
   return res.blob();
 };

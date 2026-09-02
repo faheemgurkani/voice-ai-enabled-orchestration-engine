@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "cd frontend && pnpm install --no-frozen-lockfile",
+  "buildCommand": "cd frontend && pnpm --filter @workspace/gawah-frontend build",
+  "outputDirectory": "frontend/artifacts/gawah-frontend/dist/public",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

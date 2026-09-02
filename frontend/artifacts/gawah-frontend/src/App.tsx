@@ -2,6 +2,8 @@ import { type ReactNode, lazy, Suspense } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Analytics } from '@vercel/analytics/react';
 import { ErrorBoundary } from '@/components/error-boundary';
+import { RequireAuth } from '@/components/auth/require-auth';
+import { AuthProvider } from '@/lib/auth-context';
 import { Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
 
 const queryClient = new QueryClient({
@@ -21,6 +23,7 @@ const CallsPage          = lazy(() => import('@/pages/calls'));
 const StatementPage      = lazy(() => import('@/pages/statement-detail'));
 const ClustersPage       = lazy(() => import('@/pages/clusters'));
 const ClusterDetailPage  = lazy(() => import('@/pages/cluster-detail'));
+const LoginPage          = lazy(() => import('@/pages/login'));
 const NotFoundPage       = lazy(() => import('@/pages/not-found-page'));
 
 function PageSpinner() {
@@ -44,13 +47,28 @@ function Router() {
     <RoutedErrorBoundary>
       <Suspense fallback={<PageSpinner />}>
         <Switch>
+          {/* Public — the witness plane. No account, ever. */}
           <Route path="/"                        component={LandingPage} />
           <Route path="/demo"                    component={DemoPage} />
-          <Route path="/dashboard"               component={DashboardPage} />
-          <Route path="/dashboard/:refCode"      component={StatementPage} />
-          <Route path="/calls"                   component={CallsPage} />
-          <Route path="/clusters"                component={ClustersPage} />
-          <Route path="/clusters/:clusterId"     component={ClusterDetailPage} />
+          <Route path="/login"                   component={LoginPage} />
+
+          {/* Staff plane — full statement content, so sign-in required. */}
+          <Route path="/dashboard">
+            <RequireAuth><DashboardPage /></RequireAuth>
+          </Route>
+          <Route path="/dashboard/:refCode">
+            <RequireAuth><StatementPage /></RequireAuth>
+          </Route>
+          <Route path="/calls">
+            <RequireAuth><CallsPage /></RequireAuth>
+          </Route>
+          <Route path="/clusters">
+            <RequireAuth><ClustersPage /></RequireAuth>
+          </Route>
+          <Route path="/clusters/:clusterId">
+            <RequireAuth><ClusterDetailPage /></RequireAuth>
+          </Route>
+
           <Route                                 component={NotFoundPage} />
         </Switch>
       </Suspense>
@@ -75,10 +93,12 @@ function VercelAnalytics() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
-        <Router />
-        <VercelAnalytics />
-      </WouterRouter>
+      <AuthProvider>
+        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
+          <Router />
+          <VercelAnalytics />
+        </WouterRouter>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

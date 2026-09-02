@@ -154,8 +154,9 @@ export interface ActivityResponse {
 }
 
 export interface ReviewPayload {
-  reviewed_by: string;
   reviewer_notes: string;
+  /** @deprecated Ignored by the API — attribution comes from the session token. */
+  reviewed_by?: string;
 }
 
 export interface StatementsListResponse {

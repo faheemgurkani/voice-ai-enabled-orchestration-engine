@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, Link } from 'wouter';
+import { useAuth } from '@/lib/auth-context';
 import {
   fetchStatement,
   submitReview,
@@ -20,7 +21,7 @@ import {
 export default function StatementDetail() {
   const { refCode } = useParams<{ refCode: string }>();
   const queryClient = useQueryClient();
-  const [reviewer, setReviewer] = useState('');
+  const { user } = useAuth();
   const [notes, setNotes] = useState('');
   const [isDownloading, setIsDownloading] = useState(false);
 
@@ -31,8 +32,9 @@ export default function StatementDetail() {
   });
 
   const reviewMutation = useMutation({
-    mutationFn: () =>
-      submitReview(refCode as string, { reviewed_by: reviewer, reviewer_notes: notes }),
+    // reviewed_by is not sent: the backend attributes the review to the
+    // verified token holder so it cannot be forged.
+    mutationFn: () => submitReview(refCode as string, { reviewer_notes: notes }),
     onSuccess: (data) => {
       queryClient.setQueryData(['statement', refCode], data);
     },
@@ -382,17 +384,11 @@ export default function StatementDetail() {
                     style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
                   >
                     <div className="filter-group">
-                      <label className="e-label" htmlFor="reviewer">
-                        Reviewer Name
-                      </label>
-                      <input
-                        id="reviewer"
-                        required
-                        type="text"
-                        className="e-input"
-                        value={reviewer}
-                        onChange={(e) => setReviewer(e.target.value)}
-                      />
+                      <span className="e-label">Reviewing as</span>
+                      <div className="review-identity">
+                        <span className="review-identity-mark" aria-hidden />
+                        {user?.email ?? 'Signed-in staff'}
+                      </div>
                     </div>
                     <div className="filter-group">
                       <label className="e-label" htmlFor="notes">

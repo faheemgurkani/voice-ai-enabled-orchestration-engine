@@ -76,6 +76,7 @@
   },
   "dependencies": {
     "@livekit/components-react": "^2.9.23",
+    "@supabase/supabase-js": "^2.112.4",
     "@upliftai/assistants-react": "^0.0.4",
     "@vercel/analytics": "^2.0.1",
     "livekit-client": "^2.21.0"

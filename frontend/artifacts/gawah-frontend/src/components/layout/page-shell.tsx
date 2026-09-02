@@ -2,6 +2,7 @@ import { ReactNode, useEffect, useState } from 'react';
 import { Link, useLocation } from 'wouter';
 import { fetchHealth } from '@/lib/api';
 import { SiteFooter } from '@/components/layout/site-footer';
+import { useAuth } from '@/lib/auth-context';
 
 const NAV = [
   { href: '/dashboard', label: 'Dashboard', match: '/dashboard' },
@@ -10,7 +11,8 @@ const NAV = [
 ] as const;
 
 export function PageShell({ children }: { children: ReactNode }) {
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
+  const { user, signOut, configured } = useAuth();
   const [healthError, setHealthError] = useState<string | null>(null);
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const [pinned, setPinned] = useState(false);
@@ -92,9 +94,34 @@ export function PageShell({ children }: { children: ReactNode }) {
           })}
         </div>
         <div className="topbar-meta">
-          <Link href="/demo" className="cta-btn">
-            <span className="cta-lbl">Start Demo</span>
-          </Link>
+          {configured && user ? (
+            <div className="topbar-account">
+              <span className="topbar-account-id" title={user.email ?? undefined}>
+                {user.email}
+              </span>
+              <button
+                type="button"
+                className="cta-btn cta-ghost"
+                onClick={async () => {
+                  await signOut();
+                  setLocation('/');
+                }}
+              >
+                <span className="cta-lbl">Sign out</span>
+              </button>
+            </div>
+          ) : (
+            <>
+              {configured && location !== '/login' && (
+                <Link href="/login" className="topbar-link topbar-signin">
+                  Staff sign in
+                </Link>
+              )}
+              <Link href="/demo" className="cta-btn">
+                <span className="cta-lbl">Start Demo</span>
+              </Link>
+            </>
+          )}
         </div>
       </nav>
       <div className="topbar-nav-spacer" aria-hidden />
