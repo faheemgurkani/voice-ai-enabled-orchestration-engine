@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "description": "Voice AI Enabled Orchestration Engine (Gawah) — Uplift AI × Replit Voice AI Hackathon 2026",
+  "//packageManager": "Pins the pnpm Corepack activates on Vercel. frontend/pnpm-lock.yaml is lockfileVersion 9.0, which needs pnpm 9+; the builder's default pnpm fails on Node 24 with ERR_INVALID_THIS while fetching registry metadata.",
+  "packageManager": "pnpm@10.22.0",
   "scripts": {
     "setup": "python scripts/setup.py install",
     "dev": "python scripts/setup.py dev",
