@@ -76,6 +76,11 @@ Optional later: `/lookup` public status by ref code (limited fields).
 - **UI should show:** connecting / live / ended; full dialogue after end (no truncation); activity log
 - **Details:** [`WEB_CALL_AND_DIALOGUE.md`](./WEB_CALL_AND_DIALOGUE.md)
 
+### 5.1b Phone call ("Call me")
+- **Backend:** `POST /api/sessions/call { to, participantName, captcha_token? }` → real outbound Uplift PSTN dial, no auth
+- **Abuse prevention:** this dials a real `+92` number for free with no login — don't build a second frontend entry point to it without also wiring `TurnstileWidget` (`components/turnstile-widget.tsx`) and passing its token as `captcha_token`. The backend also enforces a persisted per-number cooldown and a global hourly cap regardless of CAPTCHA config; expect **429** (not 400/500) when either trips, and surface that as a normal "try again shortly" message, not an error state.
+- Reuse `placePhoneCall(to, participantName, captchaToken)` from `lib/api.ts` rather than calling the endpoint directly.
+
 ### 5.2 Statement intake (5 legal fields)
 Stored / displayed fields:
 
@@ -298,11 +303,24 @@ Authorization: Bearer <staff-jwt>
 `reviewed_by` is **ignored if sent** — attribution comes from the verified token's `sub`/`email`, not the request body. Don't render a free-text "reviewer name" input; show the signed-in staff email instead.
 
 ### 6.6 Audio
+
+**Fixed — use the signed-URL flow, not the direct route.** Call the gated endpoint first, then set `<audio src>` to what it returns:
+
+```http
+GET /api/statements/{refCode}/audio-url  🔒
+→ { "url": "https://…supabase.co/storage/v1/object/sign/readback-audio/...", "expires_in": 300 }
+```
+
+The returned `url` is a short-lived Supabase Storage **signed URL** — hand it straight to `<audio src>`; no `Authorization` header needed on that fetch, because the auth token is embedded in the URL's query string. That's the actual fix for "`<audio src>` can't carry a Bearer header" — reuse `lib/api.ts`'s `fetchStatementAudioSignedUrl()`, already wired into `statement-detail.tsx`.
+
+404s if the statement's audio isn't Storage-backed (local/dev-only records) — in that case fall back to the legacy direct route:
+
 ```http
 GET /api/statements/{refCode}/audio
 → audio/mpeg
 ```
-**Unauthenticated by design, currently** — this feeds an `<audio src>` tag directly, which can't carry an `Authorization` header. Known open gap (not yet a signed-URL flow); don't build UI that assumes this is staff-only.
+
+This legacy route is intentionally ungated but now **refuses** (404) any Storage-backed record — it only ever serves local-disk demo/dev audio, never real production data. Don't build new UI against it directly; always try `/audio-url` first via `getStatementAudioUrl()`'s sibling `fetchStatementAudioSignedUrl()`.
 
 ### 6.7 PDF 🔒
 ```http
@@ -331,6 +349,14 @@ GET /api/dashboard/clusters/{clusterId}
 GET /api/kpis
 ```
 (also mirrored at `GET /api/dashboard/kpis`)
+
+### 6.9b Waitlist (no-auth lead capture)
+```http
+POST /api/waitlist
+{ "email": "you@example.com", "source": "demo" }
+→ { "ok": true }
+```
+Fully unauthenticated, no CAPTCHA. `source` is free text (`"demo"` | `"clusters"` by convention), purely informational. 400 on an invalid email. Resubmitting the same email is **not** an error — it returns `{"ok": true}` again (idempotent, unique-constraint-backed dedup). This is deliberately separate from `/login`'s Supabase Auth signup: no password, no account, writes to `waitlist_signups`, never `auth.users`/`profiles`. Reuse `joinWaitlist(email, source)` from `lib/api.ts` and the `<WaitlistForm source="demo"|"clusters">` component rather than calling this directly — it's already mounted on `/demo` and `/clusters`, always visible regardless of page/demo state.
 
 ### 6.10 Tool endpoints (agent / advanced demo)
 Normally invoked by the voice agent, not the dashboard. Useful for scripted demos:
@@ -465,7 +491,7 @@ Backend (never in frontend env): Uplift + OpenRouter + `SUPABASE_SERVICE_KEY` li
 ## 13. What NOT to build in frontend (MVP)
 
 - Building your own JWT verification or session storage — Supabase Auth + `AuthProvider`/`useAuth` (`lib/auth-context.tsx`) already handle this; `RequireAuth` already wraps the gated routes
-- A public "free dashboard" reading live `/api/dashboard/*` — discussed as a possible future mock/demo surface over the seeded data, not built; don't wire the public site to the real gated API to fake open access
+- A public "free dashboard" reading live `/api/dashboard/*` — discussed as a possible future mock/demo surface over the seeded data, not built; don't wire the public site to the real gated API to fake open access. (The email-capture half of that idea *is* built — `POST /api/waitlist`, §6.9b — but it's a separate, unauthenticated, unrelated table with no dashboard access attached; don't conflate the two)
 - Thumbprint / e-sign capture
 - Claiming PDPA compliance (see `COMPLIANCE_FUTURE_WORK.md`)
 - Editing witness narrative as “truth” without audit (review notes only)

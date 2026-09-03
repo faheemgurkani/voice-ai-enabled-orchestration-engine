@@ -11,6 +11,7 @@
 --   profiles_and_signup_trigger
 --   indexes_and_rls
 --   restrict_handle_new_user_execute
+--   waitlist_signups
 
 -- ─── Core tables ─────────────────────────────────────────────────────────────
 
@@ -265,3 +266,23 @@ create policy "users read own workspace kpi events"
   on public.kpi_events for select
   to authenticated
   using ( (select auth.uid()) = workspace_id );
+
+-- ─── Waitlist (no-auth lead capture on /demo and /clusters) ──────────────────
+--
+-- Deliberately separate from Auth signup on /login: this never creates an
+-- account, just records an email. RLS is enabled with zero policies — a hard
+-- deny-all for anon/authenticated via PostgREST — because this table is only
+-- ever written by the backend's service-role client (POST /api/waitlist),
+-- never read or written directly from the browser.
+
+create table public.waitlist_signups (
+  id uuid primary key default gen_random_uuid(),
+  email text not null,
+  source text,
+  created_at timestamptz not null default now(),
+  constraint waitlist_signups_email_key unique (email)
+);
+
+alter table public.waitlist_signups enable row level security;
+
+create index waitlist_signups_created_at_idx on public.waitlist_signups (created_at desc);

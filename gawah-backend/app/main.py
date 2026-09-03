@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app import __version__
 from app.config import get_settings
 from app.db.database import get_db
-from app.routers import dashboard, internal, kpis, sessions, statements, tools
+from app.routers import dashboard, internal, kpis, sessions, statements, tools, waitlist
 
 
 @asynccontextmanager
@@ -51,6 +51,7 @@ app.include_router(statements.router)
 app.include_router(dashboard.router)
 app.include_router(internal.router)
 app.include_router(kpis.router)
+app.include_router(waitlist.router)
 
 
 @app.get("/")

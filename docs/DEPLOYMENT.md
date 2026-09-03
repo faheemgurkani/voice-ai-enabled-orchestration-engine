@@ -113,8 +113,9 @@ Set these in the Vercel dashboard or via `vercel env add`. **Never commit secret
 | `VITE_API_URL` | Recommended | `https://gawah-backend.vercel.app` — baked at build time if set; otherwise code fallback applies |
 | `VITE_SUPABASE_URL` | Yes (for staff login) | Browser Auth client (`src/lib/supabase.ts`). Public — same URL as the backend's `SUPABASE_URL` |
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | Yes (for staff login) | Publishable key only — never the secret/service key, never a `VITE_`-prefixed secret. RLS bounds what it can do even if exposed |
+| `VITE_TURNSTILE_SITE_KEY` | Optional, recommended before wide public traffic | Public Cloudflare Turnstile sitekey. Unset = `components/turnstile-widget.tsx` renders nothing on `/login` and the `/demo` "Call me" form — both flows still work, just without a CAPTCHA gate. Pair with the backend's `TURNSTILE_SECRET_KEY` below |
 
-Without these two, `/login` and every `RequireAuth`-gated route (`/dashboard`, `/statements/:ref`, `/calls`, `/clusters`, `/clusters/:id`) has no way to obtain a token — the SPA still loads, but staff can't sign in.
+Without the two Supabase vars, `/login` and every `RequireAuth`-gated route (`/dashboard`, `/statements/:ref`, `/calls`, `/clusters`, `/clusters/:id`) has no way to obtain a token — the SPA still loads, but staff can't sign in.
 
 ### Backend project (`gawah-backend`)
 
@@ -133,8 +134,12 @@ Without these two, `/login` and every `RequireAuth`-gated route (`/dashboard`, `
 | `SUPABASE_SERVICE_KEY` | Yes (for durable storage) | Secret/service-role key — bypasses RLS, backend uses it for all reads/writes today |
 | `SUPABASE_KEY` | Optional | Publishable key; used only if service key is absent |
 | `DEV_AUTH_BYPASS` | No — leave unset in production | Local dev only; hard-refused when `APP_ENV=production` |
+| `TURNSTILE_SECRET_KEY` | Optional, recommended before wide public traffic | Enforces the CAPTCHA gate on `POST /api/sessions/call` (real, free, unauthenticated outbound dialing) once set — see `app/services/captcha.py`. Unset = verification skipped, not required. Also enable "CAPTCHA protection" in Supabase's Authentication settings with this same secret to gate `/login` sign-in/up too |
+| `CALL_COOLDOWN_SECONDS` / `CALL_MAX_PER_HOUR_GLOBAL` | Optional | Defaults (600s per-number cooldown, 20/hour global cap) are usually fine — persisted rate limits on outbound calls, active regardless of Turnstile config |
 
 **Without `SUPABASE_URL` set**, `Settings.auth_enabled` is `False` and every gated route (`/api/dashboard/*`, `/api/kpis`, review, PDFs, staff call routes) **fails closed with 503**, not open — there is no unauthenticated fallback for those routes. Confirm `GET /health` reports `db_backend: supabase` in production; `local_json` there means the Supabase env vars are missing or misconfigured, not a valid production state.
+
+**Before opening the site to real public traffic**, set `TURNSTILE_SECRET_KEY` + `VITE_TURNSTILE_SITE_KEY` and enable CAPTCHA protection in Supabase's dashboard (Authentication > Bot and Abuse Protection). Without this, `POST /api/sessions/call` is protected only by the persisted rate limits above (real, but not a full bot defense), and `/login` signup relies only on Supabase's built-in default rate limits (a 60s cooldown between signup confirmation requests, a handful of confirmation emails/hour on the default SMTP).
 
 **CORS example** (comma-separated, no spaces required):
 

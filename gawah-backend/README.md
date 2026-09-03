@@ -75,7 +75,11 @@ Witnesses never authenticate — their 6-char `ref_code` is the only credential.
 
 Gated (require a valid staff token): `/api/dashboard/*`, `GET /api/kpis`, `POST /api/statements/{ref}/review`, `GET /api/statements/{ref}?full=true`, `POST /api/statements/{ref}/pdf`, `GET /api/statements/{ref}/protection-pdf`, and the staff routes under `/api/sessions/` (`/activity`, `/calls`, `/calls/{id}`, `/calls/{id}/process-statement`, `/calls/{id}/refresh-artifacts`).
 
-Left open by design: the voice pipeline (`/api/tools/*`, `/api/sessions/create`, `/api/sessions/call`, `/api/sessions/web/*`, `/api/sessions/twilio-webhook`), the default (`full=false`) ref-code lookup, and `GET /api/statements/{ref}/audio` (a known gap — `<audio src>` can't carry an `Authorization` header; fix is a signed URL from the private `readback-audio` Supabase Storage bucket, not yet wired).
+Left open by design (witnesses never sign in): the voice pipeline (`/api/tools/*`, `/api/sessions/create`, `/api/sessions/call`, `/api/sessions/web/*`, `/api/sessions/twilio-webhook`), the default (`full=false`) ref-code lookup, `GET /api/statements/{ref}/audio` for local-disk-only (dev/demo) audio, and `POST /api/waitlist` (no-auth lead capture on `/demo` and `/clusters` — separate table, separate concern from Auth signup, see below).
+
+Real readback audio is no longer reachable this way: `GET /api/statements/{ref}/audio` refuses (404) any Storage-backed record, and `GET /api/statements/{ref}/audio-url` 🔒 mints a short-lived signed URL instead — the correct fix for "`<audio src>` can't carry an `Authorization` header" (auth lives in the signed URL's query string, not a header). See `app/db/database.py`'s `READBACK_AUDIO_BUCKET`/`STORAGE_URL_PREFIX` and `create_signed_audio_url()`.
+
+`POST /api/sessions/call` stays unauthenticated (must — witnesses never sign in) but is real, free outbound dialing via Uplift, so it's rate-limited (persisted per-number cooldown + global hourly cap, `CALL_COOLDOWN_SECONDS`/`CALL_MAX_PER_HOUR_GLOBAL`) and optionally CAPTCHA-gated once `TURNSTILE_SECRET_KEY` is set (`app/services/captcha.py`).
 
 Full design, verified test results, and current live gaps (workspace scoping not enforced, RLS defined but not applied at the app layer, storage bucket bug): see the **Authentication** section of the repo-root `CLAUDE.md`.
 
@@ -167,7 +171,7 @@ Only call numbers that consent. PTA + Uplift terms forbid spam.
 | Method | Path | Purpose |
 |--------|------|---------|
 | POST | `/api/sessions/create` | Adhoc WebRTC session (demo fallback if no key) |
-| POST | `/api/sessions/call` | Outbound PSTN via Uplift |
+| POST | `/api/sessions/call` | Outbound PSTN via Uplift — rate-limited (per-number cooldown + hourly cap) and optionally CAPTCHA-gated (`captcha_token`) |
 | POST | `/api/sessions/web/{id}/recording` | Mic upload + dialogue → statement |
 | POST | `/api/sessions/web/{id}/complete` | End web session |
 | POST | `/api/sessions/web/{id}/events` | Pipeline / activity events |
@@ -184,13 +188,15 @@ Only call numbers that consent. PTA + Uplift terms forbid spam.
 | POST | `/api/tools/confirm_statement` | Voice confirmation (no thumbprint) |
 | GET | `/api/statements/{refCode}` | Status + location only (`full=false` default); `?full=true` 🔒 for full text |
 | POST 🔒 | `/api/statements/{refCode}/review` | Officer/NGO review — reviewer identity comes from the JWT, not the body |
-| GET | `/api/statements/{refCode}/audio` | Readback MP3 — **unauthenticated by design** (known gap, see Authentication) |
+| GET 🔒 | `/api/statements/{refCode}/audio-url` | Signed URL for Storage-backed readback audio — use this, not `/audio`, for real data |
+| GET | `/api/statements/{refCode}/audio` | Local-disk-only readback MP3 (dev/demo). 404s on any Storage-backed record |
 | POST 🔒 | `/api/statements/{refCode}/pdf` | Statement PDF |
 | GET 🔒 | `/api/statements/{refCode}/protection-pdf` | Protection referral PDF |
 | GET 🔒 | `/api/dashboard/statements` | Filterable list |
 | GET 🔒 | `/api/dashboard/clusters` | Incident clusters |
 | GET 🔒 | `/api/dashboard/clusters/{id}` | Corroboration map |
 | GET 🔒 | `/api/kpis` | KPIs + edge-case coverage + ROI proxies |
+| POST | `/api/waitlist` | No-auth lead capture (`email`, `source`) — separate from Auth signup, no account created |
 
 ## Uplift AI usage
 

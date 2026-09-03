@@ -401,4 +401,17 @@ export const fetchCluster = (clusterId: string): Promise<ClusterDetail> =>
     `/api/dashboard/clusters/${encodeURIComponent(clusterId)}`,
   );
 
+// ── Waitlist ──────────────────────────────────────────────────────────────
+// No-auth lead capture (POST /api/waitlist) — one email field, no password,
+// no account. Separate from Supabase Auth signup on /login: this never
+// creates a login, just records an email for early access.
+export const joinWaitlist = (
+  email: string,
+  source?: string,
+): Promise<{ ok: boolean }> =>
+  gawahFetch<{ ok: boolean }>('/api/waitlist', {
+    method: 'POST',
+    body: JSON.stringify({ email, source }),
+  });
+
 export { ApiError };

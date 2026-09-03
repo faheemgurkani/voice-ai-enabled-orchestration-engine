@@ -19,6 +19,7 @@ import { WebCallRecorder } from '@/components/web-call-recorder';
 import { LiveWebCall } from '@/components/live-web-call';
 import { TranscriptChat } from '@/components/transcript-chat';
 import { TurnstileWidget } from '@/components/turnstile-widget';
+import { WaitlistForm } from '@/components/waitlist-form';
 import type { DialogueTurn } from '@/lib/dialogue';
 
 type Mode = 'phone' | 'browser';
@@ -584,6 +585,10 @@ export default function DemoPage() {
               </div>
             </div>
           )}
+        </div>
+
+        <div style={{ marginTop: 28 }}>
+          <WaitlistForm source="demo" />
         </div>
       </div>
     </PageShell>

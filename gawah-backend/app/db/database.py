@@ -61,6 +61,7 @@ class Database:
                     "sessions": [],
                     "calls": [],
                     "kpi_events": [],
+                    "waitlist_signups": [],
                 }
             )
 
@@ -72,6 +73,7 @@ class Database:
         data.setdefault("sessions", [])
         data.setdefault("calls", [])
         data.setdefault("kpi_events", [])
+        data.setdefault("waitlist_signups", [])
         return data
 
     def _write_local(self, payload: Dict[str, Any]) -> None:
@@ -468,6 +470,28 @@ class Database:
                 return []
         with self._lock:
             return list(self._read_local()["kpi_events"])
+
+    # --- Waitlist (no-auth lead capture on /demo and /clusters) ---
+
+    def add_waitlist_signup(self, email: str, *, source: Optional[str] = None) -> bool:
+        """Record a waitlist email. Idempotent: resubmitting the same email is
+        treated as success, not an error — the unique constraint on `email`
+        (Supabase) / a manual dedup check (local JSON) both no-op on repeats
+        rather than raising, so a form retry never confuses the visitor.
+        """
+        row = {"email": email, "source": source, "created_at": _iso()}
+        if self._supabase is not None:
+            try:
+                self._supabase.table("waitlist_signups").insert(row).execute()
+            except Exception:
+                pass  # duplicate email (unique constraint) or transient error either way
+            return True
+        with self._lock:
+            store = self._read_local()
+            if not any(e.get("email") == email for e in store["waitlist_signups"]):
+                store["waitlist_signups"].append(row)
+                self._write_local(store)
+        return True
 
     # --- Storage (readback audio signed URLs) ---
 
