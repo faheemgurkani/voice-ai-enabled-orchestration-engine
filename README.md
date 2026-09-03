@@ -44,7 +44,8 @@ Copy [`gawah-backend/.env.example`](./gawah-backend/.env.example), add keys (bel
 
 | Layer | Tech |
 |-------|------|
-| API | FastAPI · Uplift AI · OpenRouter · local JSON |
+| API | FastAPI · Uplift AI · OpenRouter · Supabase Postgres (or local JSON) |
+| Auth | Supabase Auth (staff/NGO login only — witnesses stay anonymous) |
 | UI | Vite · React · `@upliftai/assistants-react` |
 
 ```text
@@ -65,6 +66,8 @@ UPLIFT_BASE_URL=https://ap-southeast-1.api.upliftai.org/v1
 OPENROUTER_API_KEY=   # recommended — structuring
 ```
 
+Dashboard/Calls/KPIs are gated behind staff login (Supabase Auth). For local dev without setting up Supabase, set `DEV_AUTH_BYPASS=true` in `gawah-backend/.env` instead — see [`docs/LOCAL_SETUP.md`](./docs/LOCAL_SETUP.md).
+
 Do not commit secrets.
 
 ---
@@ -73,14 +76,17 @@ Do not commit secrets.
 
 | Doc | |
 |-----|---|
+| [`CLAUDE.md`](./CLAUDE.md) | Codebase map + full auth design/live-deployment state (most current, re-verify-fast doc) |
+| [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) | System overview |
 | [`docs/LOCAL_SETUP.md`](./docs/LOCAL_SETUP.md) | Install & troubleshooting |
-| [`docs/DEPLOYMENT.md`](./docs/DEPLOYMENT.md) | Vercel production |
-| [`docs/BACKEND_PRD_FOR_FRONTEND.md`](./docs/BACKEND_PRD_FOR_FRONTEND.md) | API contract |
+| [`docs/DEPLOYMENT.md`](./docs/DEPLOYMENT.md) | Vercel + Supabase production |
+| [`docs/BACKEND_PRD_FOR_FRONTEND.md`](./docs/BACKEND_PRD_FOR_FRONTEND.md) | API contract, incl. which routes require staff login |
 | [`docs/WEB_CALL_AND_DIALOGUE.md`](./docs/WEB_CALL_AND_DIALOGUE.md) | Live call pipeline |
-| [`docs/FULL_SPEC_AND_IMPLEMENTATION_PLAN.md`](./docs/FULL_SPEC_AND_IMPLEMENTATION_PLAN.md) | Full product spec |
+| [`docs/FULL_SPEC_AND_IMPLEMENTATION_PLAN.md`](./docs/FULL_SPEC_AND_IMPLEMENTATION_PLAN.md) | Full product spec (pre-implementation draft — see its staleness banner for auth/DB specifics that changed) |
 | [`docs/UPLIFTAI_DOCUMENTATION.md`](./docs/UPLIFTAI_DOCUMENTATION.md) | Uplift AI integration guide |
 | [`docs/GOOGLE_AI_INTEGRATION.md`](./docs/GOOGLE_AI_INTEGRATION.md) | Optional Gemini + Cloud STT/TTS |
-| [`gawah-backend/README.md`](./gawah-backend/README.md) | API runbook |
+| [`docs/PAKISTAN_LIVE_VERIFICATION_REPORT.md`](./docs/PAKISTAN_LIVE_VERIFICATION_REPORT.md) | Live probe mapped to CrPC §§161–162 / Punjab WPA 2018 |
+| [`gawah-backend/README.md`](./gawah-backend/README.md) | API runbook, incl. Authentication section |
 
 ---
 

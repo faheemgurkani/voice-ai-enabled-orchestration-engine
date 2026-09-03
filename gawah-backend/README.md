@@ -64,8 +64,20 @@ Authoritative file: **`gawah-backend/.env`** (template: `.env.example`).
 | `GEMINI_API_KEY` | Optional Gemini LLM (see [`../docs/GOOGLE_AI_INTEGRATION.md`](../docs/GOOGLE_AI_INTEGRATION.md)) |
 | `GOOGLE_APPLICATION_CREDENTIALS` | Optional Cloud STT/TTS service account JSON |
 | `CORS_ORIGINS` | Include `http://localhost:5173` for the Vite app |
+| `SUPABASE_URL` / `SUPABASE_SERVICE_KEY` | Enables Postgres persistence + staff auth gating (see below). Without these, gated routes fail closed (503), not open |
+| `DEV_AUTH_BYPASS` | Local-only escape hatch to skip JWT verification with a fixed dev user; hard-disabled when `APP_ENV=production` |
 
 Agent prompts live in `app/prompts/` (`agent_instructions.txt`, `agent_config.py`). Language lock: spoken lines in **Urdu Nastaliq** so LiveKit captions match audio.
+
+## Authentication (staff/dashboard only)
+
+Witnesses never authenticate — their 6-char `ref_code` is the only credential. Staff/dashboard users sign in via **Supabase Auth** (email/password); FastAPI verifies the resulting ES256 JWT locally against the project JWKS (`app/auth.py`), with no shared secret and no per-request round trip to the Auth server.
+
+Gated (require a valid staff token): `/api/dashboard/*`, `GET /api/kpis`, `POST /api/statements/{ref}/review`, `GET /api/statements/{ref}?full=true`, `POST /api/statements/{ref}/pdf`, `GET /api/statements/{ref}/protection-pdf`, and the staff routes under `/api/sessions/` (`/activity`, `/calls`, `/calls/{id}`, `/calls/{id}/process-statement`, `/calls/{id}/refresh-artifacts`).
+
+Left open by design: the voice pipeline (`/api/tools/*`, `/api/sessions/create`, `/api/sessions/call`, `/api/sessions/web/*`, `/api/sessions/twilio-webhook`), the default (`full=false`) ref-code lookup, and `GET /api/statements/{ref}/audio` (a known gap — `<audio src>` can't carry an `Authorization` header; fix is a signed URL from the private `readback-audio` Supabase Storage bucket, not yet wired).
+
+Full design, verified test results, and current live gaps (workspace scoping not enforced, RLS defined but not applied at the app layer, storage bucket bug): see the **Authentication** section of the repo-root `CLAUDE.md`.
 
 ## Demo seed
 
@@ -150,6 +162,8 @@ Only call numbers that consent. PTA + Uplift terms forbid spam.
 
 ## Key routes
 
+🔒 = requires a valid staff Supabase JWT (see Authentication above).
+
 | Method | Path | Purpose |
 |--------|------|---------|
 | POST | `/api/sessions/create` | Adhoc WebRTC session (demo fallback if no key) |
@@ -157,9 +171,9 @@ Only call numbers that consent. PTA + Uplift terms forbid spam.
 | POST | `/api/sessions/web/{id}/recording` | Mic upload + dialogue → statement |
 | POST | `/api/sessions/web/{id}/complete` | End web session |
 | POST | `/api/sessions/web/{id}/events` | Pipeline / activity events |
-| GET | `/api/sessions/calls` | Poll calls + sync Uplift metadata |
-| GET | `/api/sessions/calls/{id}` | Single call detail |
-| POST | `/api/sessions/calls/{id}/refresh-artifacts` | Re-fetch recording/transcript |
+| GET 🔒 | `/api/sessions/calls` | Poll calls + sync Uplift metadata |
+| GET 🔒 | `/api/sessions/calls/{id}` | Single call detail |
+| POST 🔒 | `/api/sessions/calls/{id}/refresh-artifacts` | Re-fetch recording/transcript |
 | GET | `/api/sessions/calls/{id}/recording` | Locally cached recording |
 | POST | `/api/sessions/twilio-webhook` | Inbound Twilio → Uplift callback TwiML |
 | POST | `/api/tools/save_witness_statement` | Save + TTS readback + queue engines |
@@ -168,14 +182,15 @@ Only call numbers that consent. PTA + Uplift terms forbid spam.
 | POST | `/api/tools/enable_privacy_mode` | Anonymous mode |
 | POST | `/api/tools/assess_protection_need` | Protection referral |
 | POST | `/api/tools/confirm_statement` | Voice confirmation (no thumbprint) |
-| GET | `/api/statements/{refCode}` | Statement detail |
-| POST | `/api/statements/{refCode}/review` | Officer/NGO review |
-| GET | `/api/statements/{refCode}/audio` | Readback MP3 |
-| GET | `/api/statements/{refCode}/protection-pdf` | Protection referral PDF |
-| GET | `/api/dashboard/statements` | Filterable list |
-| GET | `/api/dashboard/clusters` | Incident clusters |
-| GET | `/api/dashboard/clusters/{id}` | Corroboration map |
-| GET | `/api/kpis` | KPIs + edge-case coverage + ROI proxies |
+| GET | `/api/statements/{refCode}` | Status + location only (`full=false` default); `?full=true` 🔒 for full text |
+| POST 🔒 | `/api/statements/{refCode}/review` | Officer/NGO review — reviewer identity comes from the JWT, not the body |
+| GET | `/api/statements/{refCode}/audio` | Readback MP3 — **unauthenticated by design** (known gap, see Authentication) |
+| POST 🔒 | `/api/statements/{refCode}/pdf` | Statement PDF |
+| GET 🔒 | `/api/statements/{refCode}/protection-pdf` | Protection referral PDF |
+| GET 🔒 | `/api/dashboard/statements` | Filterable list |
+| GET 🔒 | `/api/dashboard/clusters` | Incident clusters |
+| GET 🔒 | `/api/dashboard/clusters/{id}` | Corroboration map |
+| GET 🔒 | `/api/kpis` | KPIs + edge-case coverage + ROI proxies |
 
 ## Uplift AI usage
 

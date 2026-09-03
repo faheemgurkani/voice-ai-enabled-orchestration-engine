@@ -5,8 +5,8 @@
 **Primary UI:** Vite app at `frontend/artifacts/gawah-frontend` (legacy Next.js under `client/` is optional)  
 **Backend:** FastAPI — Vite proxies `/api` → `http://localhost:8000`  
 **Interactive API docs:** `http://localhost:8000/docs`  
-**Status:** Hackathon MVP — live-tested with Uplift AI + OpenRouter  
-**Auth:** None yet (open NGO demo dashboard; add later)
+**Status:** Live in production (Vercel + Supabase) — live-tested with Uplift AI + OpenRouter  
+**Auth:** Supabase Auth (staff only) now gates the dashboard/review/KPI/PDF routes — see §2 and §6 below, and the Authentication section of the repo-root `CLAUDE.md` for the full design
 
 This document is the contract for wiring the demo UI to these endpoints and shapes.
 
@@ -26,7 +26,7 @@ This document is the contract for wiring the demo UI to these endpoints and shap
 | **NGO / Lawyer / Officer** | `/dashboard`, `/clusters` | Review, escalate, prepare counsel, export |
 | **Demo operator / judge** | Landing + KPIs | Show end-to-end story in 3–5 minutes |
 
-No login in MVP. Treat dashboard as trusted local/demo access.
+Staff/NGO routes now require a Supabase Auth login (`/login`, email+password) — `RequireAuth` redirects unauthenticated visitors there. Witnesses never authenticate; `/demo` and the ref-code lookup stay open. `lib/api.ts`'s `gawahFetch` attaches the bearer token automatically when a session exists.
 
 ---
 
@@ -48,16 +48,19 @@ Optional later: `/lookup` public status by ref code (limited fields).
 ## 4. System architecture (what frontend talks to)
 
 ```text
-[Next.js UI]
-    |  fetch JSON / audio
+[Vite UI (frontend/artifacts/gawah-frontend)]
+    |  fetch JSON / audio, Authorization: Bearer <staff-jwt> on 🔒 routes
     v
 [FastAPI gawah-backend :8000]
     |-- Uplift AI (Realtime Assistants, TTS)   Singapore base URL
     |-- OpenRouter (DeepSeek V4 Flash)        structuring / engines
-    |-- Local JSON store (MVP) or Supabase
+    |-- Supabase Postgres (or local JSON fallback)
+    |-- Supabase Auth (JWKS/ES256) — verifies the staff JWT above
+
+[Browser]  →  Supabase Auth directly (sign in/up) for the JWT itself
 ```
 
-**Frontend never holds** `UPLIFTAI_API_KEY` or `OPENROUTER_API_KEY`. Only `NEXT_PUBLIC_API_URL`.
+**Frontend never holds** `UPLIFTAI_API_KEY`, `OPENROUTER_API_KEY`, or the Supabase **service/secret** key. Only `VITE_API_URL` and the Supabase **publishable** key (`VITE_SUPABASE_URL` / `VITE_SUPABASE_PUBLISHABLE_KEY`).
 
 ---
 
@@ -238,10 +241,12 @@ POST /api/sessions/web/{callId}/complete
 
 Marks the session ended and ensures a dashboard statement exists when transcript/recording is available.
 
-### 6.3 List statements
+### 6.3 List statements 🔒
 ```http
 GET /api/dashboard/statements?page=1&status=pending_review&flags=intimidation
+Authorization: Bearer <staff-jwt>
 ```
+🔒 = requires a signed-in staff Supabase JWT; 401 without one.
 Query:
 - `page` (int, default 1)
 - `status` optional: `pending_review` \| `urgent_escalation` \| `reviewed` \| `submitted` \| `incomplete` \| `archived`
@@ -274,7 +279,9 @@ Query:
 ```http
 GET /api/statements/{refCode}
 ```
-Returns full object including:
+**Default (`full` omitted or `false`) is the anonymous callback-safe view** — only `ref_code`, `status`, `created_at`, `location`, `time_of_incident`. This is what the witness-facing "check my statement" flow should call; no token needed.
+
+`GET /api/statements/{refCode}?full=true` 🔒 returns the full object — 401 without a staff token, checked *before* the DB lookup so it can't be used to probe which ref codes exist:
 - Core fields + `core_fields` mirror
 - `inconsistency_flags`
 - `protection` / `protection_referral`
@@ -282,27 +289,29 @@ Returns full object including:
 - `readback_text`, `readback_audio_url`
 - `confirmed_by_witness`, review fields
 
-Limited callback-safe view (optional): `?full=false` → only `ref_code`, `status`, `created_at`, `location`, `time_of_incident`.
-
-### 6.5 Review
+### 6.5 Review 🔒
 ```http
 POST /api/statements/{refCode}/review
-{ "reviewed_by": "NGO Lawyer", "reviewer_notes": "Ready for counsel" }
+Authorization: Bearer <staff-jwt>
+{ "reviewer_notes": "Ready for counsel" }
 ```
+`reviewed_by` is **ignored if sent** — attribution comes from the verified token's `sub`/`email`, not the request body. Don't render a free-text "reviewer name" input; show the signed-in staff email instead.
 
 ### 6.6 Audio
 ```http
 GET /api/statements/{refCode}/audio
 → audio/mpeg
 ```
+**Unauthenticated by design, currently** — this feeds an `<audio src>` tag directly, which can't carry an `Authorization` header. Known open gap (not yet a signed-URL flow); don't build UI that assumes this is staff-only.
 
-### 6.7 PDF
+### 6.7 PDF 🔒
 ```http
 POST /api/statements/{refCode}/pdf
+Authorization: Bearer <staff-jwt>
 → application/pdf
 ```
 
-### 6.8 Clusters
+### 6.8 Clusters 🔒
 ```http
 GET /api/dashboard/clusters
 → { "items": [ { "id", "cluster_label", "statement_count", "composite_score", "collusion_warning", ... } ] }
@@ -317,7 +326,7 @@ GET /api/dashboard/clusters/{clusterId}
 }
 ```
 
-### 6.9 KPIs
+### 6.9 KPIs 🔒
 ```http
 GET /api/kpis
 ```
@@ -405,16 +414,21 @@ Fetch helper rules:
 - `cache: "no-store"` for dashboard data
 - Throw on non-2xx with `detail` from FastAPI
 - Encode `refCode` in URLs
+- Attach `Authorization: Bearer <token>` on every 🔒 route when a Supabase session exists; send no header otherwise (this is what `gawahFetch` in `lib/api.ts` already does — reuse it rather than raw `fetch`)
 
 ---
 
 ## 10. Env for frontend template
 
+This is a **Vite** app (`frontend/artifacts/gawah-frontend`), not Next.js — env vars are `VITE_`-prefixed and read via `import.meta.env`, not `NEXT_PUBLIC_`.
+
 ```env
-NEXT_PUBLIC_API_URL=http://localhost:8000
+VITE_API_URL=http://localhost:8000        # usually leave blank locally; Vite proxies /api
+VITE_SUPABASE_URL=https://<project-ref>.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=your_publishable_key   # publishable key only, never the secret key
 ```
 
-Backend (not in Next public env): Uplift + OpenRouter keys live in root / `gawah-backend` `.env`.
+Backend (never in frontend env): Uplift + OpenRouter + `SUPABASE_SERVICE_KEY` live in `gawah-backend/.env` only.
 
 ---
 
@@ -423,6 +437,7 @@ Backend (not in Next public env): Uplift + OpenRouter keys live in root / `gawah
 | Situation | UX |
 |---|---|
 | Backend down | Banner from `/health` failure |
+| 401 on a 🔒 route | Redirect to `/login?next=…` (handled by `RequireAuth`); don't retry silently |
 | 404 statement | “Reference code not found” |
 | 404 audio | Hide player / “Readback audio not ready” |
 | Session create fails | Show error; allow retry |
@@ -449,7 +464,8 @@ Backend (not in Next public env): Uplift + OpenRouter keys live in root / `gawah
 
 ## 13. What NOT to build in frontend (MVP)
 
-- Login / Supabase Auth (deferred)
+- Building your own JWT verification or session storage — Supabase Auth + `AuthProvider`/`useAuth` (`lib/auth-context.tsx`) already handle this; `RequireAuth` already wraps the gated routes
+- A public "free dashboard" reading live `/api/dashboard/*` — discussed as a possible future mock/demo surface over the seeded data, not built; don't wire the public site to the real gated API to fake open access
 - Thumbprint / e-sign capture
 - Claiming PDPA compliance (see `COMPLIANCE_FUTURE_WORK.md`)
 - Editing witness narrative as “truth” without audit (review notes only)

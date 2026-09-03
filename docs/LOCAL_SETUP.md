@@ -126,6 +126,29 @@ UPLIFT_TTS_VOICE_ID=defense-advocate   # male Standard Urdu
 UPLIFT_ASSISTANT_ID=                   # leave empty to create/sync on first call
 ```
 
+### Dashboard / Calls / KPIs need a staff login
+
+`/dashboard`, `/calls`, `/clusters`, and `GET /api/kpis` are gated behind Supabase Auth — anonymous requests get **401**. Two ways to reach them locally:
+
+```env
+# gawah-backend/.env — skip real login for local dev (never set this in production)
+DEV_AUTH_BYPASS=true
+```
+
+Or point at the real Supabase project and sign up/sign in through `/login` in the browser:
+
+```env
+# gawah-backend/.env
+SUPABASE_URL=https://<project-ref>.supabase.co
+SUPABASE_SERVICE_KEY=your_service_role_key
+
+# frontend/artifacts/gawah-frontend/.env
+VITE_SUPABASE_URL=https://<project-ref>.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=your_publishable_key
+```
+
+Without either, the JSON-store demo seed still saves/loads fine — only the staff-gated *reads* (dashboard list, KPIs, full statement text, PDFs) return 401. Witness-facing routes (`/demo`, session create, tool calls) are never gated. Full design: **Authentication** section of the repo-root `CLAUDE.md`.
+
 Optional **Google AI** (Gemini + Cloud STT/TTS — does not replace Uplift/OpenRouter):
 
 ```env
@@ -151,6 +174,7 @@ Never commit real secrets. Ask a teammate for keys out-of-band.
 
 ## Demo tour (after seed)
 
+0. Set `DEV_AUTH_BYPASS=true` (or sign in via `/login`) — see **Dashboard / Calls / KPIs need a staff login** above, otherwise steps 1–3 return 401.
 1. **Dashboard** → open **NBRA7K** (urgent / anonymity / A–B flags / protection)  
 2. **Clusters** → Mohalla Hussain Abad (3 statements, collusion check)  
 3. **Calls** → three completed sessions linked to those refs  
@@ -199,6 +223,7 @@ Windows activate: `.venv\Scripts\Activate.ps1`
 | `Use pnpm instead` | `npm i -g pnpm` or `corepack enable` |
 | Port 8000 / 5173 in use | Stop other process, or change port in vite `.env` / uvicorn `--port` |
 | Dashboard empty | `python scripts/setup.py seed` |
+| Dashboard / Calls / KPIs return 401 | Set `DEV_AUTH_BYPASS=true` in `gawah-backend/.env`, or sign in via `/login` |
 | Live call fails | Set `UPLIFTAI_API_KEY`, confirm `UPLIFT_BASE_URL` is Singapore, check `/health` |
 | Captions in English / Roman | Agent must use Nastaliq; restart a **new** Demo session after pull. STT language is forced to `ur`. |
 | No dialogue turns live | Uplift/LiveKit must stream transcriptions; after End, witness STT still fills the chat |

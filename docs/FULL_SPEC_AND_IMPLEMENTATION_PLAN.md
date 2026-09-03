@@ -4,6 +4,15 @@
 
 > **Document note:** This is the single merged and authoritative specification, incorporating the base spec, all addendum patches, and two new validated features: Section 16 (Intra-Statement Inconsistency Detection Engine) and Section 17 (Multi-Witness Consensus & Corroboration Layer).
 
+> **⚠️ Superseded implementation details — read before copying code from this doc.** The product spec (engines, KPI edge cases, legal taxonomy, feature catalog) is still the design intent. But this is the **pre-implementation draft**, written before the actual build, and several concrete details below were intentionally changed and are now wrong:
+> - **Auth/DB code samples use a Node.js `supabase-js` client and plain `Authorization: Bearer $UPLIFTAI_API_KEY`-style auth.** The real backend is Python/FastAPI. Staff auth is Supabase Auth with **ES256 JWT verified locally against JWKS** (`gawah-backend/app/auth.py`) — never a shared secret, never a per-request Auth-server round trip.
+> - **RLS policies here use `USING (true)` / a `user_id` ownership column.** The live schema uses **`workspace_id`** instead — `user_id` never populates because witnesses are anonymous and statements are written server-side, not by a logged-in creator.
+> - **This draft only names `sessions`/`statements` for auth scoping.** The live schema scopes `calls`, `kpi_events`, and `incident_clusters` too (six tables total, all RLS-enabled).
+> - **`/login` here is a bare Node auth sketch.** The real login UI is `frontend/artifacts/gawah-frontend/src/pages/login.tsx` + `lib/auth-context.tsx`.
+> - Readback audio here targets a `statements` Storage bucket; the live (and correct) target is the private `readback-audio` bucket — see CLAUDE.md for the live bug where this is still misconfigured.
+>
+> For the current, verified auth design and gated-route list, read the **Authentication** section of the repo-root `CLAUDE.md`. For the current API contract, read `docs/BACKEND_PRD_FOR_FRONTEND.md`.
+
 ---
 
 ## 1. Project Overview

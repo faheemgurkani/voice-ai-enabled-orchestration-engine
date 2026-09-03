@@ -2,7 +2,9 @@
 
 Production deployment for **Gawah**, the witness product built on this voice-AI orchestration stack. Originated at the **Uplift AI × Replit Voice AI Hackathon (2026)**; voice infrastructure by **Uplift AI**.
 
-Production runs as **two Vercel projects**: a Vite/React UI and a FastAPI API. They are linked at runtime via `VITE_API_URL` (frontend) and `CORS_ORIGINS` (backend).
+Production runs as **two Vercel projects**: a Vite/React UI and a FastAPI API. They are linked at runtime via `VITE_API_URL` (frontend) and `CORS_ORIGINS` (backend), and separately via a **Supabase project** (`gawah`, `ap-southeast-1`) for Postgres + staff Auth.
+
+Both Vercel projects are **git-linked to `main`** and auto-deploy on push — the manual `vercel deploy --prod` flow below is a fallback/first-time-setup path, not the normal one. (They were not git-linked for a stretch during Phase 1/2 development, which let backend auth code sit committed-but-undeployed for days with the live API still serving unauthenticated statement text — see CLAUDE.md's Authentication section for that history. Both are linked now.)
 
 ---
 
@@ -102,6 +104,10 @@ Set these in the Vercel dashboard or via `vercel env add`. **Never commit secret
 | Variable | Required | Example / notes |
 |----------|----------|-----------------|
 | `VITE_API_URL` | Recommended | `https://gawah-backend.vercel.app` — baked at build time if set; otherwise code fallback applies |
+| `VITE_SUPABASE_URL` | Yes (for staff login) | Browser Auth client (`src/lib/supabase.ts`). Public — same URL as the backend's `SUPABASE_URL` |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Yes (for staff login) | Publishable key only — never the secret/service key, never a `VITE_`-prefixed secret. RLS bounds what it can do even if exposed |
+
+Without these two, `/login` and every `RequireAuth`-gated route (`/dashboard`, `/statements/:ref`, `/calls`, `/clusters`, `/clusters/:id`) has no way to obtain a token — the SPA still loads, but staff can't sign in.
 
 ### Backend project (`gawah-backend`)
 
@@ -112,10 +118,16 @@ Set these in the Vercel dashboard or via `vercel env add`. **Never commit secret
 | `UPLIFT_ASSISTANT_ID` | Recommended | Avoid creating a new assistant every cold path |
 | `OPENROUTER_API_KEY` | Recommended | §161 structuring / flags |
 | `OPENROUTER_MODEL` | Optional | Default in code |
-| `CASE_ID_SECRET` | Yes (prod) | Not `change-me-in-production` |
+| `CASE_ID_SECRET` | No | Unused leftover default, not read anywhere in `app/`; safe to ignore |
 | `CORS_ORIGINS` | Yes | Must include the live UI origin(s) |
-| `APP_ENV` | Recommended | `production` |
+| `APP_ENV` | Recommended | `production` — also hard-disables `DEV_AUTH_BYPASS` regardless of that flag's value |
 | `DEBUG` | Recommended | `false` |
+| `SUPABASE_URL` | Yes (for staff auth + durable storage) | `https://<project-ref>.supabase.co` |
+| `SUPABASE_SERVICE_KEY` | Yes (for durable storage) | Secret/service-role key — bypasses RLS, backend uses it for all reads/writes today |
+| `SUPABASE_KEY` | Optional | Publishable key; used only if service key is absent |
+| `DEV_AUTH_BYPASS` | No — leave unset in production | Local dev only; hard-refused when `APP_ENV=production` |
+
+**Without `SUPABASE_URL` set**, `Settings.auth_enabled` is `False` and every gated route (`/api/dashboard/*`, `/api/kpis`, review, PDFs, staff call routes) **fails closed with 503**, not open — there is no unauthenticated fallback for those routes. Confirm `GET /health` reports `db_backend: supabase` in production; `local_json` there means the Supabase env vars are missing or misconfigured, not a valid production state.
 
 **CORS example** (comma-separated, no spaces required):
 
