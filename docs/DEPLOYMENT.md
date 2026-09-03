@@ -17,7 +17,7 @@ Both Vercel projects are **git-linked to `main`** and auto-deploy on push — th
 | Health | https://gawah-backend.vercel.app/health |
 | OpenAPI / Swagger | https://gawah-backend.vercel.app/docs |
 
-After deploy, tour the seeded demo: **Dashboard → NBRA7K → Clusters → Calls → Demo** — **only if the live Supabase project has been seeded** (see "Demo data on production" below; it is not automatic once Supabase is the backend, and is currently empty).
+After deploy, tour the seeded demo: **Dashboard → NBRA7K → Clusters → Calls → Demo** (seeded as of 2026-09-03; see "Demo data on production" below — seeding is a one-time manual step, not automatic, once Supabase is the backend, so re-run it if the project is ever reset).
 
 ### Domain note
 
@@ -86,7 +86,7 @@ On Vercel, local JSON/audio defaults to **`/tmp/gawah/`** (see `app/config.py`).
 
 ### Demo data on production
 
-On API startup, `app/main.py` calls `ensure_demo_seed()`, which loads three statements, one cluster, and three calls if missing — **but only against the local-JSON/`/tmp` store.** `ensure_demo_seed()` explicitly no-ops ("Skipped automatically when Supabase is the backend") once `SUPABASE_URL` is set, which it now is in production. **This means the live Supabase-backed deployment does not auto-seed**, and as of this writing its `statements` table is genuinely empty — `GET /api/statements/NBRA7K` on the live API returns 404, not the demo tour.
+On API startup, `app/main.py` calls `ensure_demo_seed()`, which loads three statements, one cluster, and three calls if missing — **but only against the local-JSON/`/tmp` store.** `ensure_demo_seed()` explicitly no-ops ("Skipped automatically when Supabase is the backend") once `SUPABASE_URL` is set, which it now is in production. **This means the live Supabase-backed deployment does not auto-seed on cold start** — it must be seeded once via the CLI script below. As of 2026-09-03 this has been done: `GET /api/statements/NBRA7K` on the live API returns the real record.
 
 To seed the live Supabase project, run the CLI directly (this calls `seed_demo_store()`, which — unlike `ensure_demo_seed()` — does write through to Supabase) with production Supabase credentials in scope:
 

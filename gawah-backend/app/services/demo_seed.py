@@ -601,12 +601,16 @@ def seed_demo_store(db: Database | None = None, *, replace: bool = False) -> dic
     if replace:
         _purge_seed(database)
 
+    # Cluster must be saved before the statements that reference it — Postgres
+    # enforces statements.incident_cluster_id -> incident_clusters.id as a real
+    # FK constraint (local JSON has no such constraint, which is why this
+    # ordering bug never surfaced there).
+    cluster = _build_cluster()
+    database.save_cluster(cluster)
+
     statements = _build_statements(audio_dir)
     for stmt in statements:
         database.save_statement(stmt)
-
-    cluster = _build_cluster()
-    database.save_cluster(cluster)
 
     for call in _build_calls():
         database.upsert_call(call)
@@ -619,7 +623,7 @@ def seed_demo_store(db: Database | None = None, *, replace: bool = False) -> dic
         "refs": sorted(SEED_REFS),
         "cluster_id": CLUSTER_ID,
         "calls": 3,
-        "store": settings.local_db_path,
+        "store": "supabase" if database.backend == "supabase" else settings.local_db_path,
     }
 
 
