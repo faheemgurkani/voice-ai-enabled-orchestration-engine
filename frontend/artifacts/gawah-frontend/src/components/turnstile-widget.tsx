@@ -3,7 +3,9 @@ import { useEffect, useId, useRef } from 'react';
 // Plain <script>-tag integration (no @marsidev/react-turnstile dependency) —
 // see https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/
 const SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY as string | undefined;
-const SCRIPT_SRC = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+// render=explicit: we call turnstile.render() ourselves (below) rather than
+// relying on the script's implicit auto-render-by-class-name behavior.
+const SCRIPT_SRC = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
 
 declare global {
   interface Window {
