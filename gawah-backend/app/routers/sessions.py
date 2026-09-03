@@ -26,6 +26,7 @@ from app.services.call_statement_pipeline import (
     ensure_statement_from_call,
     maybe_stream_call_to_dashboard,
 )
+from app.services.captcha import verify_turnstile
 from app.services.llm_service import LLMService, get_llm_service
 from app.services.phone_utils import CALL_INSTRUCTIONS, normalize_pakistan_phone
 from app.services.uplift_service import UpliftService, get_uplift_service
@@ -150,6 +151,7 @@ class PlaceCallBody(BaseModel):
     participantName: Optional[str] = Field(default="Witness", alias="participantName")
     participant_name: Optional[str] = None
     idempotency_key: Optional[str] = None
+    captcha_token: Optional[str] = None
 
     model_config = {"populate_by_name": True}
 
@@ -502,10 +504,40 @@ async def place_phone_call(
 
     `dispatched` only means dialing started. Track progress via
     GET /api/sessions/calls (state: dispatched→ringing→answered→completed|failed).
+
+    Unauthenticated by design (witnesses never sign in) but real money/abuse
+    exposure: this dials a real +92 number via Uplift, so it's gated by (a) an
+    optional Turnstile CAPTCHA — enforced only once TURNSTILE_SECRET_KEY is
+    configured — and (b) persisted rate limits that hold regardless of CAPTCHA
+    config: a per-number cooldown and a global hourly cap.
     """
+    settings = get_settings()
+
     e164, err = normalize_pakistan_phone(body.to)
     if err or not e164:
         raise HTTPException(status_code=400, detail=err or "Invalid phone number")
+
+    if not await verify_turnstile(body.captcha_token, settings):
+        raise HTTPException(status_code=400, detail="CAPTCHA verification failed")
+
+    recent_to_number = db.count_recent_calls(
+        within_seconds=settings.call_cooldown_seconds, to=e164
+    )
+    if recent_to_number > 0:
+        raise HTTPException(
+            status_code=429,
+            detail=(
+                f"A call to this number was already placed recently. "
+                f"Try again in a few minutes."
+            ),
+        )
+
+    recent_global = db.count_recent_calls(within_seconds=3600, limit=200)
+    if recent_global >= settings.call_max_per_hour_global:
+        raise HTTPException(
+            status_code=429,
+            detail="Outbound call volume limit reached for this hour. Try again later.",
+        )
 
     # Soft guard: warn if another call may still be active (Uplift org limit = 1)
     active = [

@@ -7,6 +7,7 @@ import {
   submitReview,
   downloadStatementPdf,
   getStatementAudioUrl,
+  fetchStatementAudioSignedUrl,
 } from '@/lib/api';
 import { PageShell } from '@/components/layout/page-shell';
 import {
@@ -29,6 +30,18 @@ export default function StatementDetail() {
     queryKey: ['statement', refCode],
     queryFn: () => fetchStatement(refCode as string),
     enabled: !!refCode,
+  });
+
+  // Signed URL for Storage-backed audio (production); falls back to the
+  // legacy direct route for local-disk (dev/demo) audio. Re-fetched on
+  // refCode change since the backend's signed URL expires after 5 minutes.
+  const { data: audioSrc } = useQuery({
+    queryKey: ['statement-audio', refCode],
+    queryFn: async () => {
+      const signed = await fetchStatementAudioSignedUrl(refCode as string);
+      return signed ?? getStatementAudioUrl(refCode as string);
+    },
+    enabled: !!refCode && !!stmt?.readback_audio_url,
   });
 
   const reviewMutation = useMutation({
@@ -198,7 +211,7 @@ export default function StatementDetail() {
               <div className="bento-body" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 <audio
                   controls
-                  src={getStatementAudioUrl(stmt.ref_code)}
+                  src={audioSrc}
                   style={{ width: '100%' }}
                   onError={(e) => {
                     (e.target as HTMLAudioElement).style.display = 'none';

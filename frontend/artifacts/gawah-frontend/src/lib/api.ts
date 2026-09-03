@@ -161,10 +161,15 @@ export interface CallsListResponse {
 export const placePhoneCall = (
   to: string,
   participantName = 'Witness',
+  captchaToken?: string | null,
 ): Promise<PlaceCallResponse> =>
   gawahFetch<PlaceCallResponse>('/api/sessions/call', {
     method: 'POST',
-    body: JSON.stringify({ to, participantName }),
+    body: JSON.stringify({
+      to,
+      participantName,
+      ...(captchaToken ? { captcha_token: captchaToken } : {}),
+    }),
   });
 
 export const fetchCalls = (limit = 25): Promise<CallsListResponse> =>
@@ -339,9 +344,32 @@ export const submitReview = (
     { method: 'POST', body: JSON.stringify(payload) },
   );
 
-// Audio URL — returns a direct URL string (used in <audio src={...}>)
+// Audio URL — legacy direct URL string, only ever valid for local-disk
+// (dev/demo) audio; the backend 404s this for anything stored in Supabase.
+// Kept as the fallback getStatementAudioSrc() uses when the signed-URL
+// fetch below 404s (i.e. non-Supabase local runs).
 export const getStatementAudioUrl = (refCode: string): string =>
   `${getBaseUrl()}/api/statements/${encodeURIComponent(refCode)}/audio`;
+
+/**
+ * Staff-gated signed URL for Storage-backed readback audio (production).
+ * Returns null when the statement's audio isn't in Storage — callers should
+ * fall back to getStatementAudioUrl() in that case (local/dev runs only).
+ * The returned URL is short-lived (backend default 300s) and carries its own
+ * auth in the query string, so it's safe to hand straight to <audio src>.
+ */
+export const fetchStatementAudioSignedUrl = async (
+  refCode: string,
+): Promise<string | null> => {
+  try {
+    const res = await gawahFetch<{ url: string; expires_in: number }>(
+      `/api/statements/${encodeURIComponent(refCode)}/audio-url`,
+    );
+    return res.url;
+  } catch {
+    return null;
+  }
+};
 
 // PDF download — returns a Blob for client-side save
 export const downloadStatementPdf = async (refCode: string): Promise<Blob> => {

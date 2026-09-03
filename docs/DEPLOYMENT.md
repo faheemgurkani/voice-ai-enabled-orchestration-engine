@@ -17,7 +17,7 @@ Both Vercel projects are **git-linked to `main`** and auto-deploy on push — th
 | Health | https://gawah-backend.vercel.app/health |
 | OpenAPI / Swagger | https://gawah-backend.vercel.app/docs |
 
-After deploy, tour the seeded demo: **Dashboard → NBRA7K → Clusters → Calls → Demo**.
+After deploy, tour the seeded demo: **Dashboard → NBRA7K → Clusters → Calls → Demo** — **only if the live Supabase project has been seeded** (see "Demo data on production" below; it is not automatic once Supabase is the backend, and is currently empty).
 
 ### Domain note
 
@@ -86,12 +86,19 @@ On Vercel, local JSON/audio defaults to **`/tmp/gawah/`** (see `app/config.py`).
 
 ### Demo data on production
 
-On API startup, `app/main.py` calls `ensure_demo_seed()` which loads three statements, one cluster, and three calls if missing:
+On API startup, `app/main.py` calls `ensure_demo_seed()`, which loads three statements, one cluster, and three calls if missing — **but only against the local-JSON/`/tmp` store.** `ensure_demo_seed()` explicitly no-ops ("Skipped automatically when Supabase is the backend") once `SUPABASE_URL` is set, which it now is in production. **This means the live Supabase-backed deployment does not auto-seed**, and as of this writing its `statements` table is genuinely empty — `GET /api/statements/NBRA7K` on the live API returns 404, not the demo tour.
 
-- Refs: **NBRA7K**, **SHPK2M**, **NBRC9Q**
-- Cluster: `26980a20-demo-hussain-abad-0001`
+To seed the live Supabase project, run the CLI directly (this calls `seed_demo_store()`, which — unlike `ensure_demo_seed()` — does write through to Supabase) with production Supabase credentials in scope:
 
-Logic lives in `gawah-backend/app/services/demo_seed.py` (CLI: `python scripts/seed_demo.py --replace`).
+```bash
+python gawah-backend/scripts/seed_demo.py --replace
+```
+
+Refs: **NBRA7K**, **SHPK2M**, **NBRC9Q** · Cluster: `26980a20-demo-hussain-abad-0001`.
+
+Note `--replace`'s purge step only *warns* on Supabase instead of deleting old seed rows first — re-running it repeatedly upserts rather than cleanly resetting. Logic lives in `gawah-backend/app/services/demo_seed.py`.
+
+Also note: the repo's local `.env` files already point `SUPABASE_URL` at the **same production project**, not a separate dev database — running the seed script locally has the same live effect as running it against Vercel.
 
 ---
 

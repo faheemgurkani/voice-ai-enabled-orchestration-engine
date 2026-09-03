@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { Link, useLocation, useSearch } from 'wouter';
 import { PageShell } from '@/components/layout/page-shell';
 import { useAuth } from '@/lib/auth-context';
+import { TurnstileWidget } from '@/components/turnstile-widget';
 
 type Mode = 'signin' | 'signup';
 
@@ -19,6 +20,7 @@ export default function LoginPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
   const redirectTo = new URLSearchParams(search).get('next') || '/dashboard';
 
@@ -29,7 +31,7 @@ export default function LoginPage() {
     setBusy(true);
     try {
       if (mode === 'signin') {
-        await signIn(email, password);
+        await signIn(email, password, captchaToken);
         setLocation(redirectTo);
         return;
       }
@@ -38,6 +40,7 @@ export default function LoginPage() {
         password,
         earlyAccessOptIn: earlyAccess,
         useCase,
+        captchaToken,
       });
       if (needsEmailConfirmation) {
         setNotice('Account created. Check your inbox to confirm before signing in.');
@@ -49,6 +52,8 @@ export default function LoginPage() {
       setError(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
       setBusy(false);
+      // Turnstile tokens are single-use; force a fresh solve on retry.
+      setCaptchaToken(null);
     }
   };
 
@@ -198,6 +203,8 @@ export default function LoginPage() {
                     {notice}
                   </div>
                 )}
+
+                <TurnstileWidget onToken={setCaptchaToken} />
 
                 <button type="submit" className="cta-btn" disabled={busy || !configured}>
                   <span className="cta-sq">{busy ? '·' : '→'}</span>

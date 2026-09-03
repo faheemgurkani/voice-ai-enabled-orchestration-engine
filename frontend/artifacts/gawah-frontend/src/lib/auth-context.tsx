@@ -15,6 +15,7 @@ interface SignUpOptions {
   password: string;
   earlyAccessOptIn: boolean;
   useCase?: string;
+  captchaToken?: string | null;
 }
 
 interface AuthState {
@@ -23,7 +24,7 @@ interface AuthState {
   /** True until the initial session lookup settles — guards flash-of-login. */
   loading: boolean;
   configured: boolean;
-  signIn: (email: string, password: string) => Promise<void>;
+  signIn: (email: string, password: string, captchaToken?: string | null) => Promise<void>;
   signUp: (options: SignUpOptions) => Promise<{ needsEmailConfirmation: boolean }>;
   signOut: () => Promise<void>;
 }
@@ -55,18 +56,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const signIn = useCallback(async (email: string, password: string) => {
-    if (!supabase) throw new Error('Authentication is not configured on this deployment');
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
-  }, []);
+  const signIn = useCallback(
+    async (email: string, password: string, captchaToken?: string | null) => {
+      if (!supabase) throw new Error('Authentication is not configured on this deployment');
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+        options: captchaToken ? { captchaToken } : undefined,
+      });
+      if (error) throw error;
+    },
+    [],
+  );
 
   const signUp = useCallback(
-    async ({ email, password, earlyAccessOptIn, useCase }: SignUpOptions) => {
+    async ({ email, password, earlyAccessOptIn, useCase, captchaToken }: SignUpOptions) => {
       if (!supabase) throw new Error('Authentication is not configured on this deployment');
       // Consent travels as user_metadata so the handle_new_user trigger writes
       // the profile row and opted_in_at in the same insert. A follow-up UPDATE
       // would leave a window where the row exists without the opt-in recorded.
+      //
+      // captchaToken only does anything once CAPTCHA protection is switched on
+      // for this project in Supabase's dashboard (Authentication > Bot and
+      // Abuse Protection) — until then Supabase ignores it. See
+      // docs/DEPLOYMENT.md. Supabase's own built-in rate limits (60s cooldown
+      // between signup confirmation requests, a handful of confirmation
+      // emails/hour by default) apply regardless of whether this is set.
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -75,6 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             early_access_opt_in: earlyAccessOptIn,
             ...(useCase?.trim() ? { use_case: useCase.trim() } : {}),
           },
+          ...(captchaToken ? { captchaToken } : {}),
         },
       });
       if (error) throw error;

@@ -97,6 +97,18 @@ class Settings(BaseSettings):
     # NGO escalation
     ngo_webhook_url: str = ""
 
+    # Cloudflare Turnstile — abuse gate on outbound "call me" (POST /api/sessions/call)
+    # and optionally on Supabase Auth sign-in/up. Unset by default: verification
+    # is skipped (not required) until a real secret key is configured, so this
+    # never blocks local dev / a fresh clone. See docs/DEPLOYMENT.md.
+    turnstile_secret_key: str = ""
+
+    # Abuse-prevention limits for POST /api/sessions/call — a free, unauthenticated
+    # endpoint that dials a real +92 number via Uplift, otherwise anyone can use it
+    # to harass a number for free on this project's Uplift bill.
+    call_cooldown_seconds: int = 600
+    call_max_per_hour_global: int = 20
+
     case_id_secret: str = "change-me-in-production"
     # Absolute defaults so cwd (repo root vs gawah-backend) does not fork the store.
     # On Vercel, defaults land in /tmp (ephemeral across cold starts without Supabase).
@@ -171,6 +183,10 @@ class Settings(BaseSettings):
     @property
     def gemini_enabled(self) -> bool:
         return bool(self.gemini_api_key)
+
+    @property
+    def turnstile_enabled(self) -> bool:
+        return bool(self.turnstile_secret_key)
 
     @property
     def google_cloud_enabled(self) -> bool:

@@ -18,6 +18,7 @@ import { PageShell } from '@/components/layout/page-shell';
 import { WebCallRecorder } from '@/components/web-call-recorder';
 import { LiveWebCall } from '@/components/live-web-call';
 import { TranscriptChat } from '@/components/transcript-chat';
+import { TurnstileWidget } from '@/components/turnstile-widget';
 import type { DialogueTurn } from '@/lib/dialogue';
 
 type Mode = 'phone' | 'browser';
@@ -36,6 +37,7 @@ export default function DemoPage() {
   const [session, setSession] = useState<SessionCreateResponse | null>(null);
   const [callInfo, setCallInfo] = useState<PlaceCallResponse | null>(null);
   const [phone, setPhone] = useState('');
+  const [callCaptchaToken, setCallCaptchaToken] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [toolLog, setToolLog] = useState<string[]>([]);
   const [webResult, setWebResult] = useState<WebRecordingResponse | null>(null);
@@ -101,7 +103,7 @@ export default function DemoPage() {
   });
 
   const startPhone = useMutation({
-    mutationFn: () => placePhoneCall(phone.trim(), 'Witness'),
+    mutationFn: () => placePhoneCall(phone.trim(), 'Witness', callCaptchaToken),
     onMutate: () => {
       setDemoState('calling');
       setErrorMsg(null);
@@ -261,6 +263,7 @@ export default function DemoPage() {
                       required
                     />
                   </div>
+                  <TurnstileWidget onToken={setCallCaptchaToken} />
                   <button type="submit" className="cta-btn" disabled={!phone.trim()}>
                     <span className="cta-sq">☎</span>
                     <span className="cta-lbl">Call me</span>

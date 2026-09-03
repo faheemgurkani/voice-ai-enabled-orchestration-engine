@@ -10,6 +10,12 @@ from app.config import Settings, get_settings
 from app.models.cluster import IncidentCluster
 from app.models.statement import InconsistencyFlag, StatementRecord
 
+# Private Storage bucket for readback audio. Must match the bucket actually
+# created in Supabase — see CLAUDE.md for the historical bug where this was
+# pointed at a nonexistent "statements" bucket and silently fell back to /tmp.
+READBACK_AUDIO_BUCKET = "readback-audio"
+STORAGE_URL_PREFIX = "supabase-storage://"
+
 
 def _now() -> datetime:
     return datetime.now(timezone.utc)
@@ -462,6 +468,60 @@ class Database:
                 return []
         with self._lock:
             return list(self._read_local()["kpi_events"])
+
+    # --- Storage (readback audio signed URLs) ---
+
+    def create_signed_audio_url(
+        self, storage_path: str, *, expires_in: int = 300
+    ) -> Optional[str]:
+        """Mint a short-lived signed URL for a private-bucket object.
+
+        `storage_path` is the path inside READBACK_AUDIO_BUCKET (e.g.
+        "{ref_code}/readback.mp3"), not the STORAGE_URL_PREFIX-tagged value
+        stored on the statement record — callers strip that prefix first.
+        Returns None when Supabase isn't configured or the call fails, so
+        callers can fall back to the legacy direct-file route.
+        """
+        if self._supabase is None:
+            return None
+        try:
+            result = self._supabase.storage.from_(READBACK_AUDIO_BUCKET).create_signed_url(
+                storage_path, expires_in
+            )
+        except Exception:
+            return None
+        if not isinstance(result, dict):
+            return None
+        return result.get("signedURL") or result.get("signedUrl") or result.get("signed_url")
+
+    # --- Lightweight abuse-prevention counters (outbound calls, etc.) ---
+    # Persisted (not in-memory) so limits hold across Vercel's stateless,
+    # multi-instance serverless functions — an in-process counter would reset
+    # on every cold start and be trivially bypassed by concurrent requests.
+
+    def count_recent_calls(
+        self, *, within_seconds: int, to: Optional[str] = None, limit: int = 200
+    ) -> int:
+        """How many outbound calls were placed recently — globally, or to one number.
+
+        Only counts genuinely dispatched attempts (mocked=False) so a Uplift
+        outage that forces demo/mocked fallback doesn't itself trip the limit.
+        """
+        cutoff = _now().timestamp() - within_seconds
+        count = 0
+        for call in self.list_calls(limit=limit):
+            if to is not None and call.get("to") != to:
+                continue
+            if call.get("mocked"):
+                continue
+            at = call.get("created_at") or call.get("at")
+            try:
+                ts = datetime.fromisoformat(str(at).replace("Z", "+00:00")).timestamp()
+            except (TypeError, ValueError):
+                continue
+            if ts >= cutoff:
+                count += 1
+        return count
 
 
 _db: Optional[Database] = None

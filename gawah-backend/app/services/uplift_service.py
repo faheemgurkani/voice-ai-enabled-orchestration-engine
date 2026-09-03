@@ -339,21 +339,29 @@ class UpliftService:
         file_path = path / "readback.mp3"
         file_path.write_bytes(audio)
 
-        # Supabase storage upload when configured
+        # Supabase storage upload when configured. Bucket must be the private
+        # `readback-audio` bucket that actually exists — a `statements` bucket
+        # was targeted here previously and doesn't exist, so every upload
+        # silently failed and fell through to the (ephemeral, on Vercel)
+        # local file below. See app/db/database.py's READBACK_AUDIO_BUCKET /
+        # STORAGE_URL_PREFIX and the /audio-url route in routers/statements.py
+        # for how this value is later turned into a signed URL.
         if self.settings.use_supabase:
             try:
+                from app.db.database import READBACK_AUDIO_BUCKET, STORAGE_URL_PREFIX
                 from supabase import create_client
 
                 client = create_client(
                     self.settings.supabase_url,
                     self.settings.supabase_anon_or_service_key,
                 )
-                client.storage.from_("statements").upload(
-                    f"{ref_code}/readback.mp3",
+                storage_path = f"{ref_code}/readback.mp3"
+                client.storage.from_(READBACK_AUDIO_BUCKET).upload(
+                    storage_path,
                     audio,
                     {"content-type": "audio/mpeg", "upsert": "true"},
                 )
-                return f"statements/{ref_code}/readback.mp3"
+                return f"{STORAGE_URL_PREFIX}{storage_path}"
             except Exception:
                 pass
 

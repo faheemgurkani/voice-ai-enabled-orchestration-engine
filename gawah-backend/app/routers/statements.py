@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import FileResponse
 
 from app.auth import AuthUser, get_current_user, get_optional_user
-from app.db.database import Database, get_db
+from app.db.database import STORAGE_URL_PREFIX, Database, get_db
 from app.models.statement import ReviewPayload
 from app.services.edge_cases import handle_callback_lookup_allowed_fields
 from app.services.pdf_service import PDFService, get_pdf_service
@@ -80,10 +80,14 @@ async def review_statement(
     return updated.to_api_detail()
 
 
-# NOTE: intentionally ungated. This is served straight into an <audio src>,
-# which the browser will never send an Authorization header with. Closing it
-# properly means moving readback audio into the private `readback-audio`
-# bucket and handing out signed URLs — tracked as Phase 3, not fixable here.
+# This route only serves the *local-disk* fallback (dev / non-Supabase demo
+# runs). It stays ungated because that fallback only ever holds seeded or
+# local-dev audio, never real witness recordings — production always stores
+# readback audio in Supabase Storage (STORAGE_URL_PREFIX), which this route
+# explicitly refuses below, forcing real audio through the gated
+# /audio-url route instead. See that route for why: an <audio src> can't
+# carry an Authorization header, so "gate this route directly" isn't an
+# option — the fix is minting a short-lived signed URL behind auth instead.
 @router.get("/{ref_code}/audio")
 async def get_readback_audio(
     ref_code: str,
@@ -94,6 +98,11 @@ async def get_readback_audio(
         raise HTTPException(status_code=404, detail="Reference code not found")
     if not stmt.readback_audio_url:
         raise HTTPException(status_code=404, detail="Readback audio not available")
+    if stmt.readback_audio_url.startswith(STORAGE_URL_PREFIX):
+        raise HTTPException(
+            status_code=404,
+            detail="Audio is in private storage — use the authenticated /audio-url route",
+        )
 
     path = Path(stmt.readback_audio_url)
     if not path.exists():
@@ -107,6 +116,36 @@ async def get_readback_audio(
             raise HTTPException(status_code=404, detail="Audio file missing on disk")
 
     return FileResponse(path, media_type="audio/mpeg", filename=f"{ref_code}-readback.mp3")
+
+
+@router.get("/{ref_code}/audio-url", dependencies=[Depends(get_current_user)])
+async def get_readback_audio_signed_url(
+    ref_code: str,
+    db: Database = Depends(get_db),
+) -> Dict[str, Any]:
+    """Staff-only: mint a short-lived signed URL for Storage-backed readback audio.
+
+    This is the real fix for the <audio src> problem — the browser can't send
+    a Bearer header on that tag, but a signed URL carries its own short-lived
+    token in the query string, so no header is needed once the frontend has
+    fetched this (authenticated) endpoint and set <audio src> to the result.
+    404s (rather than falling back silently) when the statement's audio isn't
+    in Storage, so the frontend can fall back to the legacy direct route.
+    """
+    stmt = db.get_statement_by_ref(ref_code)
+    if stmt is None:
+        raise HTTPException(status_code=404, detail="Reference code not found")
+    if not stmt.readback_audio_url or not stmt.readback_audio_url.startswith(
+        STORAGE_URL_PREFIX
+    ):
+        raise HTTPException(status_code=404, detail="Audio is not stored in Supabase Storage")
+
+    storage_path = stmt.readback_audio_url[len(STORAGE_URL_PREFIX):]
+    expires_in = 300
+    url = db.create_signed_audio_url(storage_path, expires_in=expires_in)
+    if not url:
+        raise HTTPException(status_code=502, detail="Could not sign audio URL")
+    return {"url": url, "expires_in": expires_in}
 
 
 @router.get("/{ref_code}/protection-pdf", dependencies=[Depends(get_current_user)])
