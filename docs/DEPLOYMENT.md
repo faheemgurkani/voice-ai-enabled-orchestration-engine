@@ -139,7 +139,11 @@ Without the two Supabase vars, `/login` and every `RequireAuth`-gated route (`/d
 
 **Without `SUPABASE_URL` set**, `Settings.auth_enabled` is `False` and every gated route (`/api/dashboard/*`, `/api/kpis`, review, PDFs, staff call routes) **fails closed with 503**, not open — there is no unauthenticated fallback for those routes. Confirm `GET /health` reports `db_backend: supabase` in production; `local_json` there means the Supabase env vars are missing or misconfigured, not a valid production state.
 
-**Before opening the site to real public traffic**, set `TURNSTILE_SECRET_KEY` + `VITE_TURNSTILE_SITE_KEY` and enable CAPTCHA protection in Supabase's dashboard (Authentication > Bot and Abuse Protection). Without this, `POST /api/sessions/call` is protected only by the persisted rate limits above (real, but not a full bot defense), and `/login` signup relies only on Supabase's built-in default rate limits (a 60s cooldown between signup confirmation requests, a handful of confirmation emails/hour on the default SMTP).
+**Turnstile keys exist (registered 2026-09-03 for `upliftaixreplit-gawah.vercel.app` + `localhost`) and are wired + live-verified in local `.env` files — but not yet on Vercel.** Two steps remain before this is live in production:
+1. Set `TURNSTILE_SECRET_KEY` (backend project) and `VITE_TURNSTILE_SITE_KEY` (frontend project) on Vercel — copy the values from `gawah-backend/.env` / `frontend/artifacts/gawah-frontend/.env` — then redeploy both.
+2. Enable CAPTCHA protection in Supabase's dashboard (Authentication > Bot and Abuse Protection), pasting the same secret key — this is what actually gates `/login`; the frontend already sends `captchaToken`, Supabase just ignores it until this is on.
+
+Until both land, `POST /api/sessions/call` in production is protected only by the persisted rate limits above (real, but not a full bot defense), and `/login` signup relies only on Supabase's built-in default rate limits (a 60s cooldown between signup confirmation requests, a handful of confirmation emails/hour on the default SMTP).
 
 **CORS example** (comma-separated, no spaces required):
 
