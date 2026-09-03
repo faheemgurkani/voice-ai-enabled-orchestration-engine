@@ -496,6 +496,7 @@ async def live_activity(
 @router.post("/call")
 async def place_phone_call(
     body: PlaceCallBody,
+    request: Request,
     uplift: UpliftService = Depends(get_uplift_service),
     db: Database = Depends(get_db),
 ) -> Dict[str, Any]:
@@ -517,7 +518,8 @@ async def place_phone_call(
     if err or not e164:
         raise HTTPException(status_code=400, detail=err or "Invalid phone number")
 
-    if not await verify_turnstile(body.captcha_token, settings):
+    client_ip = request.client.host if request.client else None
+    if not await verify_turnstile(body.captcha_token, settings, remoteip=client_ip):
         raise HTTPException(status_code=400, detail="CAPTCHA verification failed")
 
     recent_to_number = db.count_recent_calls(
